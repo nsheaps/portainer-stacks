@@ -1,0 +1,21 @@
+name: Validate Docker Compose Stacks
+
+on:
+  push:
+    paths:
+      - '**/*-compose.ya?ml'
+  pull_request:
+    paths:
+      - '**/*-compose.ya?ml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Validate Docker Compose files
+        uses: docker/compose@v1
+        with:
+          files: '**/*-compose.ya?ml'
