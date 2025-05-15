@@ -1,0 +1,16 @@
+{
+  "name": "portainer-stacks",
+  "version": "1.0.0",
+  "description": "A project used for syncing with a Portainer instance to update containers remotely.",
+  "main": "index.js",
+  "scripts": {
+    "check": "yarn run check:prettier",
+    "check:prettier": "prettier \"**/*.ya?ml\"",
+    "check:fix": "yarn run check:prettier --fix"
+  },
+  "author": "Nathan Heaps",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^2.3.2"
+  }
+}
