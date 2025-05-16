@@ -2,26 +2,42 @@
 name: 'Nathans-64GB-MBP'
 
 services:
-  agent:
-    image: portainer/agent
-    environment:
-      AGENT_CLUSTER_ADDR: tasks.agent
+  # agent:
+  #   image: portainer/agent
+  #   environment:
+  #     AGENT_CLUSTER_ADDR: tasks.agent
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - /var/lib/docker/volumes:/var/lib/docker/volumes
+  #   ports:
+  #     - target: 9001
+  #       published: 9001
+  #       protocol: tcp
+  #       mode: host
+  #   networks:
+  #     - portainer_agent
+  #   deploy:
+  #     mode: global
+  #     placement:
+  #       constraints: [node.platform.os == linux]
+
+  portainer:
+    ports:
+      - 10201:8000
+      - 10202:9443
+    container_name: portainer
+    restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /var/lib/docker/volumes:/var/lib/docker/volumes
-    ports:
-      - target: 9001
-        published: 9001
-        protocol: tcp
-        mode: host
-    networks:
-      - portainer_agent
-    deploy:
-      mode: global
-      placement:
-        constraints: [node.platform.os == linux]
+      - portainer_data:/data
+    image: portainer/portainer-ce:lts
 
-networks:
-  portainer_agent:
-    driver: overlay
-    attachable: true
+# networks:
+#   portainer_agent:
+#     driver: overlay
+#     attachable: true
+
+volumes:
+    portainer_data:
+        external: true
+        name: portainer_data
