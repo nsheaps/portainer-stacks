@@ -1,0 +1,7 @@
+version: '3'
+
+name: example name
+
+services:
+  pause:
+    image: k8s.gcr.io/pause
