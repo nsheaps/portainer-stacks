@@ -1,4 +1,5 @@
-name: 'example name'
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+name: 'example_name'
 
 services:
   pause:
