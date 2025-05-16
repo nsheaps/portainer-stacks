@@ -4,7 +4,7 @@ name: 'portainer'
 # kickstart this by:
 # cd ~/src/portainer-stacks/hosts/_portainer/ && docker compose up -d -f ./docker-compose.yaml
 # create the account on https://localhost:10202
-# go to stacks and create a new stack referencing this, portainer will adopt it
+# do not sync this stack with the portainer web ui, it will kill itself when it tries to reload
 
 services:
   portainer:
