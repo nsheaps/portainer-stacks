@@ -3,7 +3,11 @@
 set -e
 
 # if no args were passed in, print usage
-
+if [[ $# -eq 0 ]]; then
+    echo "Usage: $0 <docker-compose-file> [<docker-compose-file> ...]"
+    echo "Verifies that the specified docker-compose files are valid."
+    exit 1
+fi
 
 # Check if docker or podman commands are available
 if [[ -z "${CONTAINER_ENGINE}" ]]; then
