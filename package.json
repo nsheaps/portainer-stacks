@@ -4,7 +4,7 @@
   "nx": {},
   "description": "A project used for syncing with a Portainer instance to update containers remotely.",
   "scripts": {
-    "check": "[ \"${CI:-false}\" = \"true\" ] && { yarn run check:ci \"$@\"; } || { yarn run check:fix \"$@\"; }",
+    "check": "[ \"${CI:-false}\" = \"false\" ] && { yarn run check:fix \"$@\"; } || { yarn run check:ci \"$@\"; }",
     "check:ci": "nx run-many --target check:prettier --target check:docker",
     "check:prettier": "nx exec -- prettier --check '**/*.{yaml,yml,md}'",
     "check:prettier:fix": "nx exec -- prettier --write '**/*.{yaml,yml,md}'",
