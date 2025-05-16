@@ -28,4 +28,4 @@ jobs:
         run: corepack enable && corepack install && yarn install --immutable
 
       - name: Run checks
-        run: yarn run check
+        run: yarn run check:ci
