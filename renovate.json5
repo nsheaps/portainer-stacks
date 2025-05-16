@@ -50,7 +50,7 @@
     {
       matchManagers: ["dockerfile"],
       pinDigests: true,
-      pinVersions: true,
+      rangeStrategy: "pin",
     },
   ],
   customManagers: [
