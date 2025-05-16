@@ -2,5 +2,14 @@
   "tabWidth": 2,
   "useTabs": false,
   "singleQuote": true,
-  "trailingComma": "es5"
+  "trailingComma": "es5",
+  "overrides": [
+    {
+      "files": "**/*.json5",
+      "options": {
+        "singleQuote": false,
+        "trailingComma": "all"
+      }
+    }
+  ]
 }

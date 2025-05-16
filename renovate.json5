@@ -8,7 +8,7 @@
 // export LOG_LEVEL=debug && nvm install 20 && nvm exec 22 npx --yes --package renovate -- renovate --dry-run --token $(gh auth token) --platform=local | tee renovate-log.txt
 // renovate config reference: https://docs.renovatebot.com/configuration-options/
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: [
     "config:recommended",
     ":semanticCommits",
@@ -45,8 +45,7 @@
   osvVulnerabilityAlerts: true,
   dependencyDashboardOSVVulnerabilitySummary: "all",
 
-  packageRules: [
-  ],
+  packageRules: [],
   customManagers: [
     // regex manager docs: https://docs.renovatebot.com/modules/manager/regex/
     // To create regex for json:
