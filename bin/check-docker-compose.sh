@@ -32,7 +32,6 @@ fi
 
 check_file() {
     local file=$1
-    set -x
     env $COMPOSE --file "$file" config --quiet 2>&1 |
         sed "/variable is not set. Defaulting/d"
     return "${PIPESTATUS[0]}"
