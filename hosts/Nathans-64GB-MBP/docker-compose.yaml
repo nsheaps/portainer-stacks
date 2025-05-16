@@ -6,19 +6,8 @@ name: 'nathans-64gb-mbp'
 # create the account on https://localhost:10202
 # go to stacks and create a new stack referencing this, portainer will adopt it
 
+# todo: https://github.com/n8n-io/n8n-hosting/blob/main/docker-compose/subfolderWithSSL/docker-compose.yml
 services:
-  portainer:
-    ports:
-      - # todo: do we need this?
-        10201:8000
-      - # https web api
-        10202:9443
-    container_name: portainer
-    restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    image: portainer/portainer-ce:lts
   n8n:
     stdin_open: true
     tty: true
@@ -30,9 +19,6 @@ services:
     image: docker.n8n.io/n8nio/n8n
 
 volumes:
-  portainer_data:
-    external: true
-    name: portainer_data
   n8n_data:
     external: true
     name: n8n_data

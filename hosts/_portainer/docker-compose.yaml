@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+name: 'portainer'
+
+# kickstart this by:
+# cd ~/src/portainer-stacks/hosts/_portainer/ && docker compose up -d -f ./docker-compose.yaml
+# create the account on https://localhost:10202
+# go to stacks and create a new stack referencing this, portainer will adopt it
+
+services:
+  portainer:
+    ports:
+      - # todo: do we need this?
+        10201:8000
+      - # https web api
+        10202:9443
+    container_name: portainer
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    image: portainer/portainer-ce:lts
+
+volumes:
+  portainer_data:
+    external: true
+    name: portainer_data
