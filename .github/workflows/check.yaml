@@ -2,20 +2,30 @@ name: check
 
 on:
   push:
-    paths:
-      - '**/*-compose.ya?ml'
-  pull_request:
-    paths:
-      - '**/*-compose.ya?ml'
+    branches:
+      - main
+  pull_request: {}
+
+concurrency:
+  # for main we want to build all sha's, but for PRs we want the same group. On main if they share the same group, even if
+  # cancel-in-progress=false, if there's a queued build and another push happens, the queued build will be cancelled.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || ( github.ref == 'refs/heads/main' && github.sha  || github.ref ) }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  docker:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Validate Docker Compose files
-        uses: docker/compose@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          files: 'hosts/*-compose.ya?ml'
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: corepack enable && corepack install && yarn install --immutable
+
+      - name: Run checks
+        run: yarn run check:ci

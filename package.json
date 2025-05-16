@@ -1,0 +1,26 @@
+{
+  "name": "portainer-stacks",
+  "version": "1.0.0",
+  "nx": {},
+  "description": "A project used for syncing with a Portainer instance to update containers remotely.",
+  "scripts": {
+    "check": "bash -c '[ \"${CI:-false}\" = \"false\" ] && { yarn run check:fix \"$@\" ; } || { yarn run check:ci \"$@\" ; }'",
+    "check:ci": "nx run-many --target check:prettier --target check:docker",
+    "check:prettier": "nx exec -- prettier --check '**/*.{yaml,yml,md}'",
+    "check:prettier:fix": "nx exec -- prettier --write '**/*.{yaml,yml,md}'",
+    "check:docker": "nx exec -- bin/check-docker-compose.sh hosts/*/*-compose.{yaml,yml}",
+    "check:fix": "nx run-many --target check:prettier:fix --target check:docker"
+  },
+  "author": "Nathan Heaps",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^2.3.2"
+  },
+  "packageManager": "yarn@4.9.1+sha512.f95ce356460e05be48d66401c1ae64ef84d163dd689964962c6888a9810865e39097a5e9de748876c2e0bf89b232d583c33982773e9903ae7a76257270986538",
+  "engines": {
+    "node": "22.15.1"
+  },
+  "dependencies": {
+    "nx": "^21.0.3"
+  }
+}
