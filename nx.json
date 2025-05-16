@@ -1,0 +1,17 @@
+{
+  "extends": "nx/presets/npm.json",
+  "targetDefaults": {
+    "check:docker": {
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/hosts/*/*-compose.{yaml,yml}"
+      ]
+    },
+    "check:prettier": {
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/**/*.{yaml,yml}"
+      ]
+    }
+  }
+}

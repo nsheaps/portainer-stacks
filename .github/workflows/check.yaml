@@ -13,18 +13,7 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Validate Docker Compose files
-        run: |
-          bin/check-docker-compose.sh \
-            hosts/*/*-compose.y?ml
-
-  format:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -33,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: package.json
+          node-version-file: .nvmrc
 
       - name: Install dependencies
         run: corepack enable && corepack install && yarn install --immutable

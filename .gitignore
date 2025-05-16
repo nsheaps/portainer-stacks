@@ -15,6 +15,9 @@ Thumbs.db
 *.sublime-workspace
 
 # Yarn
-.pnp.*
 .yarn/install-state.gz
 .yarn/plugins
+.yarn/unplugged
+
+# nx
+.nx

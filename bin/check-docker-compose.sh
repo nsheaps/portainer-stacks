@@ -32,6 +32,7 @@ fi
 
 check_file() {
     local file=$1
+    set -x
     env $COMPOSE --file "$file" config --quiet 2>&1 |
         sed "/variable is not set. Defaulting/d"
     return "${PIPESTATUS[0]}"
@@ -50,7 +51,7 @@ check_files() {
             else
                 printf "✅\n"
                 continue
-            fi            
+            fi
         else
             printf "❌\n"
             echo "ERROR: $file does not exist" >&2
