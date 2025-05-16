@@ -2,9 +2,6 @@ name: check
 
 on:
   push:
-    branches:
-      - main
-  pull_request: {}
 
 concurrency:
   # for main we want to build all sha's, but for PRs we want the same group. On main if they share the same group, even if

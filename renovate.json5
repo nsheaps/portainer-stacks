@@ -11,6 +11,7 @@
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: [
     "config:recommended",
+    "default:automergeDigest",
     ":semanticCommits",
     // Use recommended monorepo groupings
     // This preset groups dependencies from the same monorepo together
@@ -45,7 +46,13 @@
   osvVulnerabilityAlerts: true,
   dependencyDashboardOSVVulnerabilitySummary: "all",
 
-  packageRules: [],
+  packageRules: [
+    {
+      matchManagers: ["dockerfile"],
+      pinDigests: true,
+      pinVersions: true
+    }
+  ],
   customManagers: [
     // regex manager docs: https://docs.renovatebot.com/modules/manager/regex/
     // To create regex for json:
