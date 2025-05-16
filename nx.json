@@ -1,5 +1,8 @@
 {
   "extends": "nx/presets/npm.json",
+  "tui": {
+    "enabled": false
+  },
   "targetDefaults": {
     "check:docker": {
       "cache": true,
