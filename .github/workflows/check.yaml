@@ -22,7 +22,7 @@ jobs:
       - name: Validate Docker Compose files
         run: |
           bin/check-docker-compose.sh \
-            hosts/**/*-compose.ya?ml
+            hosts/*/*-compose.y?ml
 
   format:
     runs-on: ubuntu-latest
