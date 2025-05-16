@@ -1,5 +1,5 @@
 {
-  "name": "portainer-stacks",
+  "name": "@nsheaps/portainer-stacks",
   "version": "1.0.0",
   "nx": {},
   "description": "A project used for syncing with a Portainer instance to update containers remotely.",
