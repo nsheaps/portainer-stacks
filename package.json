@@ -6,10 +6,10 @@
   "scripts": {
     "check": "bash -c '[ \"${CI:-false}\" = \"false\" ] && { yarn run check:fix \"$@\" ; } || { yarn run check:ci \"$@\" ; }'",
     "check:ci": "nx run-many --target check:prettier --target check:docker",
+    "check:fix": "nx run-many --target check:prettier:fix --target check:docker"
     "check:prettier": "nx exec -- prettier --check '**/*.{yaml,yml,md}'",
     "check:prettier:fix": "nx exec -- prettier --write '**/*.{yaml,yml,md}'",
     "check:docker": "nx exec -- bin/check-docker-compose.sh hosts/*/*-compose.{yaml,yml}",
-    "check:fix": "nx run-many --target check:prettier:fix --target check:docker"
   },
   "author": "Nathan Heaps",
   "license": "MIT",
