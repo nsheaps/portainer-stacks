@@ -50,8 +50,8 @@
     {
       matchManagers: ["dockerfile"],
       pinDigests: true,
-      pinVersions: true
-    }
+      pinVersions: true,
+    },
   ],
   customManagers: [
     // regex manager docs: https://docs.renovatebot.com/modules/manager/regex/
