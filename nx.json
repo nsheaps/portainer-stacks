@@ -10,7 +10,7 @@
     },
     "check:prettier": {
       "cache": true,
-      "inputs": ["{projectRoot}/**/*.{yaml,yml,md}"]
+      "inputs": ["{projectRoot}/**/*.{yaml,yml,md,json,json5}"]
     }
   }
 }
