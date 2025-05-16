@@ -41,20 +41,26 @@ check_files() {
     local all_files=( "$@" )
     has_error=0
     for file in "${all_files[@]}"; do
-        printf "Checking %s..." "$file"
+        if [[ -n "${GITHUB_ACTIONS}" ]]; then
+            echo "::group::Checking %s..." "$file"
+        else
+            echo "Checking %s..." "$file"
+        fi
         if [[ -f "$file" ]]; then
             if ! check_file "$file"; then
-                printf "❌\n"
+                echo "❌"
                 echo "ERROR: $file" >&2
                 has_error=1
             else
-                printf "✅\n"
-                continue
+                echo "✅"
             fi
         else
-            printf "❌\n"
+            echo "❌"
             echo "ERROR: $file does not exist" >&2
             has_error=1
+        fi
+        if [[ -n "${GITHUB_ACTIONS}" ]]; then
+            echo "::endgroup::"
         fi
     done
     return $has_error
