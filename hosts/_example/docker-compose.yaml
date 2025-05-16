@@ -1,6 +1,4 @@
-version: '3'
-
-name: example name
+name: 'example name'
 
 services:
   pause:

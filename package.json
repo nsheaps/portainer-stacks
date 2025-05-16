@@ -4,9 +4,10 @@
   "nx": {},
   "description": "A project used for syncing with a Portainer instance to update containers remotely.",
   "scripts": {
-    "check": "nx run-many --target check:prettier --target check:docker",
-    "check:prettier": "nx exec -- prettier --write '**/*.{yaml,yml}'",
-    "check:prettier:fix": "nx exec -- prettier --write '**/*.{yaml,yml}'",
+    "check": "[ \"${CI:-false}\" = \"true\" ] && { yarn run check:ci \"$@\"; } || { yarn run check:fix \"$@\"; }",
+    "check:ci": "nx run-many --target check:prettier --target check:docker",
+    "check:prettier": "nx exec -- prettier --check '**/*.{yaml,yml,md}'",
+    "check:prettier:fix": "nx exec -- prettier --write '**/*.{yaml,yml,md}'",
     "check:docker": "nx exec -- bin/check-docker-compose.sh hosts/*/*-compose.{yaml,yml}",
     "check:fix": "nx run-many --target check:prettier:fix --target check:docker"
   },

@@ -21,7 +21,7 @@ Set up a stack to poll using authenticated requests from this repo: https://docs
 
 Find example stacks here: https://github.com/portainer/templates/tree/master/stacks
 
-A super basic example can be found in hosts/_example/docker-compose.yaml
+A super basic example can be found in hosts/\_example/docker-compose.yaml
 
 ## Development quickstart
 
@@ -36,7 +36,7 @@ yarn install
 
 ## Command reference
 
-| Script       | Description                                      |
-|--------------|--------------------------------------------------|
-| `yarn run check` | Checks linting, formatting, types (if applicable) |
-| `yarn run check:fix` | Runs checks, autofixing where possible |
+| Script               | Description                                       |
+| -------------------- | ------------------------------------------------- |
+| `yarn run check`     | Checks linting, formatting, types (if applicable) |
+| `yarn run check:fix` | Runs checks, autofixing where possible            |

@@ -32,29 +32,28 @@ fi
 
 check_file() {
     local file=$1
+    echo "👀 Checking $file..."
     env $COMPOSE --file "$file" config --quiet 2>&1 |
         sed "/variable is not set. Defaulting/d"
-    return "${PIPESTATUS[0]}"
+    local status="${PIPESTATUS[0]}"
+    if [[ $status -ne 0 ]]; then
+        echo "❌ ERROR: $file" >&2
+        return $status
+    fi
+    return $status
 }
 
 check_files() {
     local all_files=( "$@" )
     has_error=0
     for file in "${all_files[@]}"; do
-        echo "👀 Checking %s..." "$file"
         if [[ -f "$file" ]]; then
             if ! check_file "$file"; then
-                echo "❌ ERROR: $file" >&2
                 has_error=1
-            else
-                printf "\r✅ %s\n" "$file"
             fi
         else
             echo "❌ ERROR: $file does not exist" >&2
             has_error=1
-        fi
-        if [[ -n "${GITHUB_ACTIONS}" ]]; then
-            echo "::endgroup::"
         fi
     done
     return $has_error
