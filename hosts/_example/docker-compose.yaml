@@ -3,4 +3,4 @@ name: 'example_name'
 
 services:
   pause:
-    image: k8s.gcr.io/pause
+    image: registry.k8s.io/pause
