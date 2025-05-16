@@ -1,4 +1,4 @@
-name: Validate Docker Compose Stacks
+name: check
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - '**/*-compose.ya?ml'
 
 jobs:
-  validate:
+  docker:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -18,19 +18,21 @@ jobs:
       - name: Validate Docker Compose files
         uses: docker/compose@v1
         with:
-          files: '**/*-compose.ya?ml'
+          files: 'hosts/*-compose.ya?ml'
 
-  prettier:
+  format:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
 
       - name: Install dependencies
-        run: yarn install --immutable
+        run: corepack enable && corepack install && yarn install --immutable
 
-      - name: Run Prettier
+      - name: Run checks
         run: yarn run check
