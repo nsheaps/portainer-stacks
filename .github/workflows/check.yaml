@@ -2,11 +2,6 @@ name: check
 
 on:
   push:
-    paths:
-      - '**/*-compose.ya?ml'
-  pull_request:
-    paths:
-      - '**/*-compose.ya?ml'
 
 jobs:
   docker:
