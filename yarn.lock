@@ -53,6 +53,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nsheaps/portainer-stacks@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@nsheaps/portainer-stacks@workspace:."
+  dependencies:
+    nx: "npm:^21.0.3"
+    prettier: "npm:^3.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@nx/nx-darwin-arm64@npm:21.0.3":
   version: 21.0.3
   resolution: "@nx/nx-darwin-arm64@npm:21.0.3"
@@ -968,15 +977,6 @@ __metadata:
   checksum: 10c0/748c43efd5a569c039d7a00a03b58eecd1d75f3999f5a28303d75f521288df4823bc057d8784eb72358b2895a05f29a070bc9f1f17d28226cc4e62494cc58c4c
   languageName: node
   linkType: hard
-
-"portainer-stacks@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "portainer-stacks@workspace:."
-  dependencies:
-    nx: "npm:^21.0.3"
-    prettier: "npm:^3.0.0"
-  languageName: unknown
-  linkType: soft
 
 "prettier@npm:^3.0.0":
   version: 3.5.3
