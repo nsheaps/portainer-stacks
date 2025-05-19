@@ -24,7 +24,7 @@ x-shared: &shared
     - postgres
     - redis
   volumes:
-    - n8n_storage:/home/node/.n8n
+    - /Users/nheaps/.portainer/volumes/n8n_storage:/home/node/.n8n
   depends_on:
     redis:
       condition: service_healthy
@@ -41,7 +41,7 @@ services:
       - POSTGRES_NON_ROOT_USER
       - POSTGRES_NON_ROOT_PASSWORD
     volumes:
-      - db_storage:/var/lib/postgresql/data
+      - /Users/nheaps/.portainer/volumes/db_storage:/var/lib/postgresql/data
       - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
     healthcheck:
       test:
@@ -57,7 +57,7 @@ services:
     image: redis:8-alpine
     restart: always
     volumes:
-      - redis_storage:/data
+      - /Users/nheaps/.portainer/volumes/redis_storage:/data
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
@@ -75,31 +75,31 @@ services:
     depends_on:
       - n8n
 
-volumes:
+# volumes:
   # db_storage:
   #   external: true
   #   name: db_storage
-  n8n_storage:
-    external: true
-    name: n8n_storage
+  # n8n_storage:
+  #   external: true
+  #   name: n8n_storage
   # redis_storage:
   #   external: true
   #   name: redis_storage
-  db_storage:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: "/Users/nheaps/.portainer/volumes/db_storage"
+  # db_storage:
+  #   driver: local
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: "/Users/nheaps/.portainer/volumes/db_storage"
   # n8n_storage:
   #   driver: local
   #   driver_opts:
   #     o: bind
   #     type: none
   #     device: "/Users/nheaps/.portainer/volumes/n8n_storage"
-  redis_storage:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: "/Users/nheaps/.portainer/volumes/redis_storage"
+  # redis_storage:
+  #   driver: local
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: "/Users/nheaps/.portainer/volumes/redis_storage"
