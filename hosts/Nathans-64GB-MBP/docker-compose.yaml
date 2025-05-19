@@ -85,19 +85,19 @@ volumes:
   # redis_storage:
   #   external: true
   #   name: redis_storage
-  dbs_storage:
+  db_storage:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: "/Users/nheaps/.portainer/volumes/db_storage"
-  n8ns_storage:
+  n8n_storage:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: "/Users/nheaps/.portainer/volumes/n8n_storage"
-  rediss_storage:
+  redis_storage:
     driver: local
     driver_opts:
       o: bind
