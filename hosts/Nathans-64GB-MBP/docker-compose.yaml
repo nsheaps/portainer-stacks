@@ -90,16 +90,16 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: "/home/$USER/.portainer/volumes/db_storage"
+      device: "/Users/nheaps/.portainer/volumes/db_storage"
   n8n_storage:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: "/home/$USER/.portainer/volumes/n8n_storage"
+      device: "/Users/nheaps/.portainer/volumes/n8n_storage"
   redis_storage:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: "/home/$USER/.portainer/volumes/redis_storage"
+      device: "/Users/nheaps/.portainer/volumes/redis_storage"
