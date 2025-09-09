@@ -70,8 +70,7 @@ services:
       git-checkout:
         condition: service_completed_successfully
         restart: true
-    # command: ["/bin/bash", "/mnt/portainer-stacks/hosts/Nathans-64GB-MBP/scripts/fetch-secrets.sh"]
-    command: '/bin/true'
+    command: ["/bin/bash", "/mnt/portainer-stacks/hosts/Nathans-64GB-MBP/scripts/fetch-secrets.sh"]
 
   postgres:
     image: postgres:17
