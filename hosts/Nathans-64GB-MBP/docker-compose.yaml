@@ -41,6 +41,30 @@ services:
       - secrets_volume:/var/run/secrets
     command: ["/bin/bash", "/fetch-secrets.sh"]
 
+  # Portainer-ce doesn't support mounting from the local directory.
+  # If using agent, we'd need to download the repo from git like this
+  # https://github.com/portainer/portainer/issues/6390#issuecomment-1100954657
+  # In theory we could change portainer's volume to persist to disk, but that doesn't work
+  # for agents (where the agent runs the stack instead of the root instance, not typical of
+  # docker-compose setups
+  git-checkout:
+    image: bitnami/git:latest
+    working_dir: /temp
+    environment:
+      - GITHUB_TOKEN_FILE=/run/secrets/github_token
+    command: >
+      bash -c "
+        export GITHUB_TOKEN="$(cat $GITHUB_TOKEN_FILE)"
+        export GITHUB_REPO_OWNER="$(cat $GITHUB_OWNER_FILE)
+        export GITHUB_REPO_NAME="$(cat $GITHUB_REPO_NAME_FILE)"
+        find /temp -mindepth 1 -delete &&
+        find /files -mindepth 1 -delete &&
+        git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}.git &&
+        cp -R "./${GITHUB_REPO_NAME}/." /mnt/portainer-stacks
+      "
+    volumes:
+      - portainer_stacks:/mnt/portainer-stacks
+
   postgres:
     image: postgres:17
     restart: always
@@ -50,8 +74,14 @@ services:
       - POSTGRES_DB_FILE=/run/secrets/postgres_db
     volumes:
       - db_storage:/var/lib/postgresql/data
-      - ./init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh:ro
       - secrets_volume:/run/secrets:ro
+      - portainer_stacks:/mnt/portainer-stacks
+      - type: volume
+        source: portainer_stacks
+        target: /docker-entrypoint-initdb.d/init-postgres.sh
+        volume:
+          subpath: hosts/Nathans-64GB-MBP/scripts/init-postgres.sh
+      # - ./init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh:ro
     healthcheck:
       test:
         [
@@ -88,6 +118,7 @@ services:
       - n8n
 
 volumes:
+  portainer_stacks:
   db_storage:
     driver: local
   n8n_storage:
@@ -99,5 +130,3 @@ volumes:
       type: tmpfs
       device: tmpfs
       o: size=10m,mode=0755
-
-# No secrets section needed since we're using a shared volume approach
