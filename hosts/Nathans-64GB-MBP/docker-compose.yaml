@@ -45,11 +45,7 @@ services:
   # docker-compose setups
   git-checkout:
     image: bitnami/git:latest
-    working_dir: /temp
-    environment:
-      - GITHUB_TOKEN_FILE=/run/secrets/github_token
-      - GITHUB_OWNER_FILE=/run/secrets/github_owner
-      - GITHUB_REPO_NAME_FILE=/run/sercrets/github_repo
+    working_dir: /tmp
     command: >
       bash -c "
         set -euo pipefail
