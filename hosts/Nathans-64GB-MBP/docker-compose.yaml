@@ -34,6 +34,7 @@ x-shared: &shared
       condition: service_healthy
     secrets-init:
       condition: service_completed_successfully
+      restart: true
 
 services:
   # Portainer-ce doesn't support mounting from the local directory.
@@ -58,6 +59,7 @@ services:
         find /files -mindepth 1 -delete &&
         git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}.git &&
         cp -R "./${GITHUB_REPO_NAME}/." /mnt/portainer-stacks
+    restart: on-failure
     volumes:
       - portainer_stacks:/mnt/portainer-stacks
 
@@ -73,6 +75,7 @@ services:
     depends_on:
       git-checkout:
         condition: service_completed_successfully
+        restart: true
     # command: ["/bin/bash", "/mnt/portainer-stacks/hosts/Nathans-64GB-MBP/scripts/fetch-secrets.sh"]
     command: '/bin/true'
 
@@ -105,6 +108,7 @@ services:
     depends_on:
       secrets-init:
         condition: service_completed_successfully
+        restart: true
 
   redis:
     image: redis:8-alpine
