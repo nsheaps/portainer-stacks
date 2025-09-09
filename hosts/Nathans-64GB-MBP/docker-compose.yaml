@@ -49,12 +49,9 @@ services:
     command: >
       bash -c "
         set -euo pipefail
-        export GITHUB_TOKEN=\"$(cat $GITHUB_TOKEN_FILE)\"
-        export GITHUB_REPO_OWNER=\"$(cat $GITHUB_OWNER_FILE)\"
-        export GITHUB_REPO_NAME=\"$(cat $GITHUB_REPO_NAME_FILE)\"
         cd \"$(mktemp -d)\"
-        git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}.git
-        cp -R \"./${GITHUB_REPO_NAME}/.\" /mnt/portainer-stacks
+        git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_OWNER}/${GITHUB_REPO}.git
+        cp -R \"./${GITHUB_REPO}/.\" /mnt/portainer-stacks
       "
     restart: on-failure
     volumes:
