@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
-name: 'nathans-64gb-mbp-n8n'
+name: 'heapsnas-n8n'
 
 x-shared: &shared
   restart: always

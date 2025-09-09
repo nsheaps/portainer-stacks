@@ -2,17 +2,16 @@
 name: 'portainer'
 
 # kickstart this by:
-# cd ~/src/portainer-stacks/hosts/_portainer/ && docker compose up -d -f ./docker-compose.yaml
+# cd ~/src/portainer-stacks/hosts/_portainer/ && docker compose -f ./docker-compose.yaml up -d
 # create the account on https://localhost:10202
 # do not sync this stack with the portainer web ui, it will kill itself when it tries to reload
 
 services:
   portainer:
     ports:
-      - # todo: do we need this?
-        10201:8000
       - # https web api
         10202:9443
+      - 10201:8000
     container_name: portainer
     restart: always
     volumes:
