@@ -56,9 +56,8 @@ services:
         export GITHUB_TOKEN=\"$(cat $GITHUB_TOKEN_FILE)\"
         export GITHUB_REPO_OWNER=\"$(cat $GITHUB_OWNER_FILE)\"
         export GITHUB_REPO_NAME=\"$(cat $GITHUB_REPO_NAME_FILE)\"
-        find /temp -mindepth 1 -delete &&
-        find /files -mindepth 1 -delete &&
-        git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}.git &&
+        cd \"$(mktemp -d)\"
+        git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}.git
         cp -R \"./${GITHUB_REPO_NAME}/.\" /mnt/portainer-stacks
       "
     restart: on-failure
