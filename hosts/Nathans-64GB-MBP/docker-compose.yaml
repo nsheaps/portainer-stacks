@@ -1,6 +1,12 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 name: 'nathans-64gb-mbp-n8n'
 
+# Set in env on portainer:
+# - GITHUB_TOKEN = <pat portainer uses>
+# - GITHUB_REPO_OWNER = nsheaps
+# - GITHUB_REPO_NAME = portainer-stacks
+# - OP_SERVICE_ACCOUNT_TOKEN
+
 x-shared: &shared
   restart: always
   image: docker.n8n.io/n8nio/n8n
@@ -30,17 +36,6 @@ x-shared: &shared
       condition: service_completed_successfully
 
 services:
-  # Init container to fetch secrets from 1Password
-  secrets-init:
-    image: 1password/op:2
-    environment:
-      # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
-      - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
-    volumes:
-      - ./fetch-secrets.sh:/fetch-secrets.sh:ro
-      - secrets_volume:/var/run/secrets
-    command: ["/bin/bash", "/fetch-secrets.sh"]
-
   # Portainer-ce doesn't support mounting from the local directory.
   # If using agent, we'd need to download the repo from git like this
   # https://github.com/portainer/portainer/issues/6390#issuecomment-1100954657
@@ -64,6 +59,25 @@ services:
       "
     volumes:
       - portainer_stacks:/mnt/portainer-stacks
+
+  # Init container to fetch secrets from 1Password
+  secrets-init:
+    image: 1password/op:2
+    environment:
+      # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
+      - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
+    volumes:
+      - secrets_volume:/run/secrets:ro
+      - portainer_stacks:/mnt/portainer-stacks
+      - type: volume
+        source: portainer_stacks
+        target: /fetch-secrets.sh
+        volume:
+          subpath: hosts/Nathans-64GB-MBP/scripts/fetch-secrets.sh
+    depends_on:
+      git-checkout:
+        condition: service_completed_successfully
+    command: ["/bin/bash", "/fetch-secrets.sh"]
 
   postgres:
     image: postgres:17
