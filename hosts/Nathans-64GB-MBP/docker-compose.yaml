@@ -51,14 +51,16 @@ services:
       - GITHUB_OWNER_FILE=/run/secrets/github_owner
       - GITHUB_REPO_NAME_FILE=/run/sercrets/github_repo
     command: >
+      bash -c "
         set -euo pipefail
-        export GITHUB_TOKEN="$(cat $GITHUB_TOKEN_FILE)"
-        export GITHUB_REPO_OWNER="$(cat $GITHUB_OWNER_FILE)
-        export GITHUB_REPO_NAME="$(cat $GITHUB_REPO_NAME_FILE)"
+        export GITHUB_TOKEN=\"$(cat $GITHUB_TOKEN_FILE)\"
+        export GITHUB_REPO_OWNER=\"$(cat $GITHUB_OWNER_FILE)\"
+        export GITHUB_REPO_NAME=\"$(cat $GITHUB_REPO_NAME_FILE)\"
         find /temp -mindepth 1 -delete &&
         find /files -mindepth 1 -delete &&
         git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}.git &&
-        cp -R "./${GITHUB_REPO_NAME}/." /mnt/portainer-stacks
+        cp -R \"./${GITHUB_REPO_NAME}/.\" /mnt/portainer-stacks
+      "
     restart: on-failure
     volumes:
       - portainer_stacks:/mnt/portainer-stacks
