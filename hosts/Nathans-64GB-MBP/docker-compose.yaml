@@ -69,15 +69,10 @@ services:
     volumes:
       - secrets_volume:/run/secrets:ro
       - portainer_stacks:/mnt/portainer-stacks
-      - type: volume
-        source: portainer_stacks
-        target: /fetch-secrets.sh
-        volume:
-          subpath: hosts/Nathans-64GB-MBP/scripts/fetch-secrets.sh
     depends_on:
       git-checkout:
         condition: service_completed_successfully
-    command: ["/bin/bash", "/fetch-secrets.sh"]
+    command: ["/bin/bash", "/mnt/portainer-stacks/hosts/Nathans-64GB-MBP/scripts/fetch-secrets.sh"]
 
   postgres:
     image: postgres:17
