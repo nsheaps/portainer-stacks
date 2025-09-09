@@ -37,7 +37,7 @@ services:
       # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
       - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
     volumes:
-      - ./scripts/fetch-secrets.sh:/fetch-secrets.sh:ro
+      - ${PWD}/scripts/fetch-secrets.sh:/fetch-secrets.sh:ro
       - secrets_volume:/var/run/secrets
     command: ["/bin/bash", "/fetch-secrets.sh"]
     
@@ -50,7 +50,7 @@ services:
       - POSTGRES_DB_FILE=/run/secrets/postgres_db
     volumes:
       - db_storage:/var/lib/postgresql/data
-      - ./scripts/init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh:ro
+      - ${PWD}/scripts/init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh:ro
       - secrets_volume:/run/secrets:ro
     healthcheck:
       test:
