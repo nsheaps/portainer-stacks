@@ -24,17 +24,27 @@ ls -lha /run/secrets/
 # Format: op://vault-name/item-name/field-name
 # item names cannot contain slashes when using this reference format
 
-echo "Fetching PostgreSQL root credentials..."
-op read --no-newline "op://heapsinfra/portainer--gather-mbp--postgres--root-user/username" > /run/secrets/postgres_root_user
-op read --no-newline "op://heapsinfra/portainer--gather-mbp--postgres--root-user/password" > /run/secrets/postgres_root_password
+function fetch() {
+    local ref="$1"
+    local dest="$2"
+    op read --no-newline "$ref" > "$dest"
+    echo " got '$ref' => '$dest'"
+}
 
-echo "Fetching PostgreSQL database configuration..."
-op read --no-newline "op://heapsinfra/portainer--gather-mbp--n8n--db/db" > /run/secrets/postgres_db
-op read --no-newline "op://heapsinfra/portainer--gather-mbp--n8n--db/username" > /run/secrets/postgres_user
-op read --no-newline "op://heapsinfra/portainer--gather-mbp--n8n--db/password" > /run/secrets/postgres_password
+echo "Fetching all secrets in parallel..."
 
-echo "Fetching n8n encryption key..."
-op read --no-newline "op://heapsinfra/portainer--gather-mbp--n8n/encryption_key" > /run/secrets/n8n_encryption_key
+# Start all op reads in the background
+fetch "op://heapsinfra/portainer--gather-mbp--postgres--root-user/username" "/run/secrets/postgres_root_user" &
+fetch "op://heapsinfra/portainer--gather-mbp--postgres--root-user/password" "/run/secrets/postgres_root_password" &
+fetch "op://heapsinfra/portainer--gather-mbp--n8n--db/db" "/run/secrets/postgres_db" &
+fetch "op://heapsinfra/portainer--gather-mbp--n8n--db/username" "/run/secrets/postgres_user" &
+fetch "op://heapsinfra/portainer--gather-mbp--n8n--db/password" "/run/secrets/postgres_password" &
+fetch "op://heapsinfra/portainer--gather-mbp--n8n/encryption_key" "/run/secrets/n8n_encryption_key" &
+
+# Wait for all background jobs to complete
+wait
+
+echo "All secrets fetched successfully!"
 
 # Set appropriate permissions so everyone that has access to this volume
 # can read the secrets, but not write to them.
