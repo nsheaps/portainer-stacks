@@ -4,6 +4,8 @@ set -e
 # This script runs inside the postgres container during initialization
 # It creates the non-root user for n8n using secrets mounted in the container
 
+trap "sleep 5" exit
+
 echo "Creating n8n database user..."
 
 # Read the secrets
