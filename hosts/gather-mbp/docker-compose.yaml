@@ -64,7 +64,7 @@ services:
       # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
       - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
     volumes:
-      - secrets_volume:/run/secrets
+      - secrets_volume:/run/secrets:rw
       - portainer_stacks:/mnt/portainer-stacks
     depends_on:
       git-checkout:
@@ -73,7 +73,7 @@ services:
     command:
       [
         '/bin/bash',
-        '/mnt/portainer-stacks/hosts/Nathans-64GB-MBP/scripts/fetch-secrets.sh',
+        '/mnt/portainer-stacks/hosts/gather-mbp/scripts/fetch-secrets.sh',
       ]
 
   postgres:
@@ -91,8 +91,7 @@ services:
         source: portainer_stacks
         target: /docker-entrypoint-initdb.d/init-postgres.sh
         volume:
-          subpath: hosts/Nathans-64GB-MBP/scripts/init-postgres.sh
-      # - ./init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh:ro
+          subpath: hosts/gather-mbp/scripts/init-postgres.sh
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -h localhost -U postgres -d n8n']
       interval: 5s
@@ -137,5 +136,4 @@ volumes:
     driver_opts:
       type: tmpfs
       device: tmpfs
-      mode: 1777
       o: size=10m,mode=0755
