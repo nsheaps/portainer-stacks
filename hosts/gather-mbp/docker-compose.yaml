@@ -57,12 +57,12 @@ services:
     working_dir: /tmp
     command: >
       bash -c '
-        START_TIME=$(date +%s)
         set -euo pipefail
         cd /mnt/portainer-stacks
         # if the git repository has already been initialized
         # fetch and reset to the latest HEAD on the remote default
         # branch.
+        START_TIME=$(date +%s)
         if [ -d .git ]; then
           echo "Fetching and resetting to HEAD of default branch on remote..."
           git fetch origin
@@ -73,7 +73,7 @@ services:
         fi
         END_TIME=$(date +%s)
         ELAPSED_TIME=$((END_TIME - START_TIME))
-        echo "took: ${ELAPSED_TIME} seconds"
+        echo "took: $${ELAPSED_TIME} seconds"
       '
     restart: on-failure
     volumes:
