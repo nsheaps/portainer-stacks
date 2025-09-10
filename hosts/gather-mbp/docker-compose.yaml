@@ -38,7 +38,6 @@ x-shared: &shared
       restart: true
 
 services:
-
   # GITHUB_TOKEN, GITHUB_OWNER, and GITHUB_REPO should be set in Portainer as stack environment variable
   # Portainer-ce doesn't support mounting from the local directory.
   # If using agent, we'd need to download the repo from git like this
@@ -63,7 +62,7 @@ services:
   # Init container to fetch secrets from 1Password
   secrets-init:
     image: 1password/op:2
-    user: "0:0" # Run as root for putting in the secrets dir
+    user: '0:0' # Run as root for putting in the secrets dir
     environment:
       # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
       - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
@@ -99,7 +98,11 @@ services:
         volume:
           subpath: hosts/gather-mbp/scripts/init-postgres.sh
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -h localhost -U $(cat $${POSTGRES_USER_FILE}) -d $(cat $${N8N_POSTGRES_DB_FILE:-does_not_exist})']
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -h localhost -U $(cat $${POSTGRES_USER_FILE}) -d $(cat $${N8N_POSTGRES_DB_FILE:-does_not_exist})',
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
