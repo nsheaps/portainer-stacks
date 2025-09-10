@@ -22,16 +22,16 @@ echo "Running as $(whoami), group: $(id -g), uid: $(id -u)"
 ls -lha /run/secrets/
 
 echo "Fetching PostgreSQL root credentials..."
-op read "op://heapsinfra/gather-mbp/postgres/root_user" > /run/secrets/postgres_root_user
-op read "op://heapsinfra/gather-mbp/postgres/root_password" > /run/secrets/postgres_root_password
+op read "op://heapsinfra/portainer--gather-mbp--postgres--root-user/username" > /run/secrets/postgres_root_user
+op read "op://heapsinfra/portainer--gather-mbp--postgres--root-user/password" > /run/secrets/postgres_root_password
 
 echo "Fetching PostgreSQL database configuration..."
-op read "op://heapsinfra/gather-mbp/n8n/postgres_db" > /run/secrets/postgres_db
-op read "op://heapsinfra/gather-mbp/n8n/postgres_user" > /run/secrets/postgres_user
-op read "op://heapsinfra/gather-mbp/n8n/postgres_password" > /run/secrets/postgres_password
+op read "op://heapsinfra/portainer--gather-mbp--n8n--db/db" > /run/secrets/postgres_db
+op read "op://heapsinfra/portainer--gather-mbp--n8n--db/user" > /run/secrets/postgres_user
+op read "op://heapsinfra/portainer--gather-mbp--n8n--db/password" > /run/secrets/postgres_password
 
 echo "Fetching n8n encryption key..."
-op read "op://heapsinfra/gather-mbp/n8n/n8n_encryption_key" > /run/secrets/n8n_encryption_key
+op read "op://heapsinfra/portainer--gather-mbp--n8n/encryption_key" > /run/secrets/n8n_encryption_key
 
 # Set appropriate permissions so everyone that has access to this volume
 # can read the secrets, but not write to them.
