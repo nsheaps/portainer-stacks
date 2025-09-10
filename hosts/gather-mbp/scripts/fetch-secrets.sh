@@ -27,7 +27,7 @@ op read "op://heapsinfra/portainer--gather-mbp--postgres--root-user/password" > 
 
 echo "Fetching PostgreSQL database configuration..."
 op read "op://heapsinfra/portainer--gather-mbp--n8n--db/db" > /run/secrets/postgres_db
-op read "op://heapsinfra/portainer--gather-mbp--n8n--db/user" > /run/secrets/postgres_user
+op read "op://heapsinfra/portainer--gather-mbp--n8n--db/username" > /run/secrets/postgres_user
 op read "op://heapsinfra/portainer--gather-mbp--n8n--db/password" > /run/secrets/postgres_password
 
 echo "Fetching n8n encryption key..."
