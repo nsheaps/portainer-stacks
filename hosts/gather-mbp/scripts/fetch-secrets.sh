@@ -19,6 +19,8 @@ mkdir -p /run/secrets
 # Replace these with your actual 1Password references
 # Format: op://vault-name/item-name/field-name
 
+ls -lha /run/secrets/
+
 echo "Fetching PostgreSQL root credentials..."
 op read "op://heapsinfra/gather-mbp/postgres/root_user" > /run/secrets/postgres_root_user
 op read "op://heapsinfra/gather-mbp/postgres/root_password" > /run/secrets/postgres_root_password
@@ -38,4 +40,4 @@ echo "Secrets extraction completed successfully!"
 
 # List extracted secrets (without showing content)
 echo "Extracted secrets:"
-ls -la /run/secrets/
+ls -lha /run/secrets/
