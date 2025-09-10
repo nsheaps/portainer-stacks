@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-trap "sleep 15" exit
-
 echo "Starting 1Password secrets extraction..."
 
 # Check if OP_SERVICE_ACCOUNT_TOKEN is set
