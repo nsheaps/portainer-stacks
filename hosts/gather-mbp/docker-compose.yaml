@@ -9,7 +9,7 @@ name: 'gather-mbp'
 
 x-shared: &shared
   restart: always
-  image: docker.n8n.io/n8nio/n8n
+  image: docker.n8n.io/n8nio/n8n:1.111.0
   environment:
     - DB_TYPE=postgresdb
     - DB_POSTGRESDB_HOST=postgres
@@ -35,7 +35,10 @@ x-shared: &shared
       condition: service_healthy
     secrets-init:
       condition: service_completed_successfully
-      restart: true
+      # we don't want to restart every time this is
+      # restarted, since every update restarts this,
+      # which would cause downtime.
+      # restart: true
 
 services:
   # GITHUB_TOKEN, GITHUB_OWNER, and GITHUB_REPO should be set in Portainer as stack environment variable
@@ -109,7 +112,10 @@ services:
     depends_on:
       secrets-init:
         condition: service_completed_successfully
-        restart: true
+        # we don't want to restart every time this is
+        # restarted, since every update restarts this, which would cause
+        # downtime.
+        # restart: true
 
   redis:
     image: redis:8-alpine
