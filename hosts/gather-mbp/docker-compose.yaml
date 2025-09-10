@@ -56,12 +56,20 @@ services:
     image: bitnami/git:latest
     working_dir: /tmp
     command: >
-      bash -c "
+      bash -c '
         set -euo pipefail
-        cd \"$(mktemp -d)\"
-        git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_OWNER}/${GITHUB_REPO}.git
-        cp -R \"./${GITHUB_REPO}/.\" /mnt/portainer-stacks
-      "
+        cd /mnt/portainer-stacks
+        # if the git repository has already been initialized
+        # fetch and reset to the latest HEAD on the remote default
+        # branch.
+        if [ -d .git ]; then
+          git fetch origin
+          git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
+        else
+          # otherwise, check it out - note stores credentials in .git via the remote origin url
+          git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_OWNER}/${GITHUB_REPO}.git .
+        fi
+      '
     restart: on-failure
     volumes:
       - portainer_stacks:/mnt/portainer-stacks
