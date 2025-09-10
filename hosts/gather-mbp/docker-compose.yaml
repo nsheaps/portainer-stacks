@@ -62,6 +62,7 @@ services:
   # Init container to fetch secrets from 1Password
   secrets-init:
     image: 1password/op:2
+    user: "0:0" # Run as root for putting in the secrets dir
     environment:
       # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
       - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}

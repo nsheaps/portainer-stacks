@@ -33,8 +33,9 @@ op read "op://heapsinfra/gather-mbp/n8n/postgres_password" > /run/secrets/postgr
 echo "Fetching n8n encryption key..."
 op read "op://heapsinfra/gather-mbp/n8n/n8n_encryption_key" > /run/secrets/n8n_encryption_key
 
-# Set appropriate permissions
-chmod 600 /run/secrets/*
+# Set appropriate permissions so everyone that has access to this volume
+# can read the secrets, but not write to them.
+chmod 444 /run/secrets/*
 
 echo "Secrets extraction completed successfully!"
 
