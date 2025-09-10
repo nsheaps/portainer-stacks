@@ -57,7 +57,7 @@ services:
     working_dir: /tmp
     command: >
       bash -c '
-        START_TIME=$(date +%s)
+        START_TIME=$(date +%s.%N)
         set -euo pipefail
         cd /mnt/portainer-stacks
         # if the git repository has already been initialized
@@ -71,8 +71,8 @@ services:
           # otherwise, check it out - note stores credentials in .git via the remote origin url
           git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_OWNER}/${GITHUB_REPO}.git .
         fi
-        END_TIME=$(date +%s)
-        ELAPSED_TIME=$((END_TIME - START_TIME))
+        END_TIME=$(date +%s.%N)
+        ELAPSED_TIME=$(echo "$END_TIME - $START_TIME" | bc)
         echo "took: ${ELAPSED_TIME} seconds"
       '
     restart: on-failure

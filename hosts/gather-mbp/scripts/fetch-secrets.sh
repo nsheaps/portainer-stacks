@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-START_TIME=$(date +%s)
+START_TIME=$(date +%s.%N)
 
 echo "Starting 1Password secrets extraction..."
 
@@ -52,8 +52,8 @@ chmod 444 /run/secrets/*
 
 echo "Secrets extraction completed successfully!"
 
-END_TIME=$(date +%s)
-ELAPSED_TIME=$((END_TIME - START_TIME))
+END_TIME=$(date +%s.%N)
+ELAPSED_TIME=$(echo "$END_TIME - $START_TIME" | bc)
 echo "took: ${ELAPSED_TIME} seconds"
 
 # List extracted secrets (without showing content)
