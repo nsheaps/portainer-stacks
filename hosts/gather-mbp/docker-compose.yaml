@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
-name: 'nathans-64gb-mbp-n8n'
+name: 'gather-mbp'
 
 # Set in env on portainer:
 # - GITHUB_TOKEN = <pat portainer uses>
