@@ -137,4 +137,5 @@ volumes:
     driver_opts:
       type: tmpfs
       device: tmpfs
+      mode: 1777
       o: size=10m,mode=0755
