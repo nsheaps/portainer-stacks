@@ -64,7 +64,7 @@ services:
       # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
       - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
     volumes:
-      - secrets_volume:/run/secrets:rw
+      - secrets_volume:/run/secrets:rw,mode=1777
       - portainer_stacks:/mnt/portainer-stacks
     depends_on:
       git-checkout:

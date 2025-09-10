@@ -13,29 +13,29 @@ if [ -z "$OP_SERVICE_ACCOUNT_TOKEN" ]; then
 fi
 
 # Create secrets directory if it doesn't exist
-mkdir -p /var/run/secrets
+mkdir -p /run/secrets
 
 # Example 1Password vault and item references
 # Replace these with your actual 1Password references
 # Format: op://vault-name/item-name/field-name
 
 echo "Fetching PostgreSQL root credentials..."
-op read "op://heapsinfra/nathans-64gb-mbp/postgres/root_user" > /var/run/secrets/postgres_root_user
-op read "op://heapsinfra/nathans-64gb-mbp/postgres/root_password" > /var/run/secrets/postgres_root_password
+op read "op://heapsinfra/gather-mbp/postgres/root_user" > /run/secrets/postgres_root_user
+op read "op://heapsinfra/gather-mbp/postgres/root_password" > /run/secrets/postgres_root_password
 
 echo "Fetching PostgreSQL database configuration..."
-op read "op://heapsinfra/nathans-64gb-mbp/n8n/postgres_db" > /var/run/secrets/postgres_db
-op read "op://heapsinfra/nathans-64gb-mbp/n8n/postgres_user" > /var/run/secrets/postgres_user
-op read "op://heapsinfra/nathans-64gb-mbp/n8n/postgres_password" > /var/run/secrets/postgres_password
+op read "op://heapsinfra/gather-mbp/n8n/postgres_db" > /run/secrets/postgres_db
+op read "op://heapsinfra/gather-mbp/n8n/postgres_user" > /run/secrets/postgres_user
+op read "op://heapsinfra/gather-mbp/n8n/postgres_password" > /run/secrets/postgres_password
 
 echo "Fetching n8n encryption key..."
-op read "op://heapsinfra/nathans-64gb-mbp/n8n/n8n_encryption_key" > /var/run/secrets/n8n_encryption_key
+op read "op://heapsinfra/gather-mbp/n8n/n8n_encryption_key" > /run/secrets/n8n_encryption_key
 
 # Set appropriate permissions
-chmod 600 /var/run/secrets/*
+chmod 600 /run/secrets/*
 
 echo "Secrets extraction completed successfully!"
 
 # List extracted secrets (without showing content)
 echo "Extracted secrets:"
-ls -la /var/run/secrets/
+ls -la /run/secrets/
