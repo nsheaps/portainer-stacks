@@ -39,7 +39,6 @@ x-shared: &shared
       # restarted, since every update restarts this,
       # which would cause downtime.
       # restart: true
-
 services:
   # GITHUB_TOKEN, GITHUB_OWNER, and GITHUB_REPO should be set in Portainer as stack environment variable
   # Portainer-ce doesn't support mounting from the local directory.
