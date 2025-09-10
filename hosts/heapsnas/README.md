@@ -84,12 +84,14 @@ op read "op://Infrastructure/n8n-heapsnas/postgres_root_user" > /secrets/postgre
 
 ## Security Considerations
 
-1. **Service Account Token**: 
+1. **Service Account Token**:
+
    - Never commit the token to git
    - Rotate tokens regularly
    - Use least-privilege access (read-only to specific vaults)
 
 2. **Secrets Volume**:
+
    - Uses tmpfs (RAM-based) storage
    - Automatically cleared on container restart
    - Not persisted to disk
@@ -105,6 +107,7 @@ op read "op://Infrastructure/n8n-heapsnas/postgres_root_user" > /secrets/postgre
 Check logs: `docker logs heapsnas-n8n-secrets-init-1`
 
 Common issues:
+
 - Missing or invalid `OP_SERVICE_ACCOUNT_TOKEN`
 - Incorrect 1Password references in `fetch-secrets.sh`
 - Network connectivity to 1Password.com
@@ -132,6 +135,7 @@ Common issues:
 ### Backup
 
 Important data locations:
+
 - PostgreSQL data: `/var/lib/docker/volumes/heapsnas-n8n_db_storage`
 - n8n workflows: `/var/lib/docker/volumes/heapsnas-n8n_n8n_storage`
 - Redis data: `/var/lib/docker/volumes/heapsnas-n8n_redis_storage`

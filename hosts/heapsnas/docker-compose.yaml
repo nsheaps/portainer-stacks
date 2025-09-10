@@ -39,8 +39,8 @@ services:
     volumes:
       - ./scripts/fetch-secrets.sh:/fetch-secrets.sh:ro
       - secrets_volume:/var/run/secrets
-    command: ["/bin/bash", "/fetch-secrets.sh"]
-    
+    command: ['/bin/bash', '/fetch-secrets.sh']
+
   postgres:
     image: postgres:17
     restart: always
@@ -53,11 +53,7 @@ services:
       - ./scripts/init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh:ro
       - secrets_volume:/run/secrets:ro
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'pg_isready -h localhost -U postgres -d n8n',
-        ]
+      test: ['CMD-SHELL', 'pg_isready -h localhost -U postgres -d n8n']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -79,7 +75,7 @@ services:
   n8n:
     <<: *shared
     ports:
-      - "${N8N_PORT:-5678}:5678"
+      - '${N8N_PORT:-5678}:5678'
 
   n8n-worker:
     <<: *shared
@@ -99,5 +95,4 @@ volumes:
       type: tmpfs
       device: tmpfs
       o: size=10m,mode=0755
-
 # No secrets section needed since we're using a shared volume approach

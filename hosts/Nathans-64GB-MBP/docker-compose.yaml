@@ -70,7 +70,11 @@ services:
       git-checkout:
         condition: service_completed_successfully
         restart: true
-    command: ["/bin/bash", "/mnt/portainer-stacks/hosts/Nathans-64GB-MBP/scripts/fetch-secrets.sh"]
+    command:
+      [
+        '/bin/bash',
+        '/mnt/portainer-stacks/hosts/Nathans-64GB-MBP/scripts/fetch-secrets.sh',
+      ]
 
   postgres:
     image: postgres:17
@@ -90,11 +94,7 @@ services:
           subpath: hosts/Nathans-64GB-MBP/scripts/init-postgres.sh
       # - ./init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh:ro
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'pg_isready -h localhost -U postgres -d n8n',
-        ]
+      test: ['CMD-SHELL', 'pg_isready -h localhost -U postgres -d n8n']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -117,7 +117,7 @@ services:
   n8n:
     <<: *shared
     ports:
-      - "${N8N_PORT:-5678}:5678"
+      - '${N8N_PORT:-5678}:5678'
 
   n8n-worker:
     <<: *shared
