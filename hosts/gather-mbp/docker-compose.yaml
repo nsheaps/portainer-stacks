@@ -50,7 +50,7 @@ services:
   # docker-compose setups
   test:
     image: alpine:latest
-    command: ["sh", "-c", "echo This is a test container && sleep 20"]
+    command: ["sh", "-c", "echo This is a test container && sleep 200"]
     restart: "no"
   git-checkout:
     image: bitnami/git:latest
