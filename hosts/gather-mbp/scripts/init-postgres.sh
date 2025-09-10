@@ -13,9 +13,13 @@ N8N_USER=$(cat /run/secrets/postgres_user)
 N8N_PASSWORD=$(cat /run/secrets/postgres_password)
 N8N_DB=$(cat /run/secrets/postgres_db)
 
+POSTGRES_ROOT_USER=$(cat /run/secrets/postgres_root_user)
+POSTGRES_ROOT_PASSWORD=$(cat /run/secrets/postgres_root_password)
+MAINTENANCE_DB=postgres
+
 # Create the user and grant privileges
-psql -v ON_ERROR_STOP=1 --username "postgres" <<-EOSQL
-    CREATE USER ${N8N_USER} WITH PASSWORD '${N8N_PASSWORD}';
+psql -v ON_ERROR_STOP=1 --username "${POSTGRES_ROOT_USER}" "${MAINTENANCE_DB}" <<-EOSQL
+    CREATE USER ${N8N_USER} WITH ENCRYPTED PASSWORD '${N8N_PASSWORD}';
     CREATE DATABASE ${N8N_DB};
     GRANT ALL PRIVILEGES ON DATABASE ${N8N_DB} TO ${N8N_USER};
     ALTER DATABASE ${N8N_DB} OWNER TO ${N8N_USER};

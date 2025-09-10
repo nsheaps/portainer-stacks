@@ -136,7 +136,6 @@ volumes:
   redis_storage:
     driver: local
   secrets_volume:
-    driver_opts:
-      type: tmpfs
-      device: tmpfs
-      o: size=10m
+    # can't use tmpfs because we need to share between multiple containers
+    # https://docs.docker.com/engine/storage/tmpfs/#limitations-of-tmpfs-mounts:~:text=Unlike%20volumes%20and%20bind%20mounts%2C%20you%20can%27t%20share%20tmpfs%20mounts%20between%20containers.
+    driver: local
