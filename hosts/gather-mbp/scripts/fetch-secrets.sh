@@ -18,7 +18,7 @@ mkdir -p /run/secrets
 # Example 1Password vault and item references
 # Replace these with your actual 1Password references
 # Format: op://vault-name/item-name/field-name
-
+echo "Running as $(whoami), group: $(id -g), uid: $(id -u)"
 ls -lha /run/secrets/
 
 echo "Fetching PostgreSQL root credentials..."
