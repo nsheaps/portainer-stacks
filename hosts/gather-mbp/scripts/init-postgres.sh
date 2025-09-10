@@ -19,4 +19,8 @@ psql -v ON_ERROR_STOP=1 --username "postgres" <<-EOSQL
     ALTER DATABASE ${N8N_DB} OWNER TO ${N8N_USER};
 EOSQL
 
+echo "Waiting for ${N8N_DB} db and ${N8N_USER} user to be ready (5s)..."
+pg_isready -h localhost -U "${N8N_USER}" -d "${N8N_DB}" -t 5
+echo "PostgreSQL is ready!"
+
 echo "n8n database user created successfully!"

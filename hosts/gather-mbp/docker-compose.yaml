@@ -96,7 +96,7 @@ services:
         volume:
           subpath: hosts/gather-mbp/scripts/init-postgres.sh
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -h localhost -U postgres -d n8n']
+      test: ['CMD-SHELL', 'pg_isready -h localhost -U $(cat ${POSTGRES_USER_FILE})']
       interval: 5s
       timeout: 5s
       retries: 10
