@@ -9,9 +9,9 @@ trap "sleep 5" exit
 echo "Creating n8n database user..."
 
 # Read the secrets
-N8N_USER=$(cat /run/secrets/postgres_user)
-N8N_PASSWORD=$(cat /run/secrets/postgres_password)
-N8N_DB=$(cat /run/secrets/postgres_db)
+N8N_USER="$(cat /run/secrets/postgres_user)"
+N8N_PASSWORD="$(cat /run/secrets/postgres_password)"
+N8N_DB="$(cat /run/secrets/postgres_db)"
 
 POSTGRES_ROOT_USER=$(cat /run/secrets/postgres_root_user)
 POSTGRES_ROOT_PASSWORD=$(cat /run/secrets/postgres_root_password)
