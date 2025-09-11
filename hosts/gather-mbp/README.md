@@ -85,13 +85,11 @@ op read "op://heapsinfra/nathans-64gb-mbp/postgres/root_user" > /var/run/secrets
 ## Security Considerations
 
 1. **Service Account Token**:
-
    - Never commit the token to git
    - Rotate tokens regularly
    - Use least-privilege access (read-only to specific vaults)
 
 2. **Secrets Volume**:
-
    - Uses tmpfs (RAM-based) storage
    - Automatically cleared on container restart
    - Not persisted to disk
