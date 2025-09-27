@@ -95,7 +95,7 @@ services:
       ]
 
   postgres:
-    image: postgres:17
+    image: postgres:18
     restart: always
     environment:
       - POSTGRES_USER_FILE=/run/secrets/postgres_root_user
