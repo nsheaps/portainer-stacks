@@ -11,6 +11,7 @@ x-shared: &shared
   restart: always
   image: docker.n8n.io/n8nio/n8n:1.114.0
   environment:
+    # ref: https://docs.n8n.io/hosting/configuration/environment-variables/
     - DB_TYPE=postgresdb
     - DB_POSTGRESDB_HOST=postgres
     - DB_POSTGRESDB_PORT=5432
@@ -23,6 +24,9 @@ x-shared: &shared
     - N8N_ENCRYPTION_KEY_FILE=/run/secrets/n8n_encryption_key
     - N8N_RUNNERS_ENABLED=true
     - N8N_EDITOR_BASE_URL=https://n8n.heaps.cloud
+    - # https://docs.n8n.io/hosting/configuration/configuration-examples/webhook-url/
+      WEBHOOK_URL=https://n8n.heaps.cloud/
+    - N8N_PROXY_HOPS=1
   links:
     - postgres
     - redis
