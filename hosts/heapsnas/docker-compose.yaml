@@ -90,7 +90,8 @@ services:
     command:
       [
         "/bin/bash",
-        "/mnt/portainer-stacks/hosts/heapsnas/scripts/fetch-secrets.sh",
+        "-c",
+        "/mnt/portainer-stacks/hosts/heapsnas/scripts/fetch-secrets.sh || { sleep 300; exit 1; }",
       ]
 
   postgres:
