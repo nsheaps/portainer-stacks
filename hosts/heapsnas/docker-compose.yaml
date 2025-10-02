@@ -50,8 +50,8 @@ services:
   git-checkout:
     image: alpine/git:latest
     working_dir: /tmp
+    entrypoint: ["/bin/sh"]
     command:
-      - sh
       - -c
       - |
         set -euo pipefail
