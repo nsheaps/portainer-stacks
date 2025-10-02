@@ -50,7 +50,7 @@ services:
   git-checkout:
     image: alpine/git:latest
     working_dir: /tmp
-    entrypoint: ["/bin/sh", "-l", "-c"]
+    entrypoint: ["/bin/sh", "-c"]
     command: >
       set -euo pipefail
       cd /mnt/portainer-stacks
