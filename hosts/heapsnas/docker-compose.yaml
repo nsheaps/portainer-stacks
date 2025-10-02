@@ -50,26 +50,28 @@ services:
   git-checkout:
     image: alpine/git:latest
     working_dir: /tmp
-    entrypoint: ["/bin/sh"]
-    command: >
-      set -euo pipefail
-      set -x
-      cd /mnt/portainer-stacks
-      echo if the git repository has already been initialized
-      echo fetch and reset to the latest HEAD on the remote default
-      echo branch
-      START_TIME=$(date +%s)
-      if [ -d .git ]; then
-        echo "Fetching and resetting to HEAD of default branch on remote..."
-        git fetch origin
-        git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
-      else
-        # otherwise, check it out - note stores credentials in .git via the remote origin url
-        git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_OWNER}/${GITHUB_REPO}.git .
-      fi
-      END_TIME=$(date +%s)
-      ELAPSED_TIME=$((END_TIME - START_TIME))
-      echo "took: $${ELAPSED_TIME} seconds"
+    command:
+      - sh
+      - -c
+      - |
+        set -euo pipefail
+        set -x
+        cd /mnt/portainer-stacks
+        echo if the git repository has already been initialized
+        echo fetch and reset to the latest HEAD on the remote default
+        echo branch
+        START_TIME=$(date +%s)
+        if [ -d .git ]; then
+          echo "Fetching and resetting to HEAD of default branch on remote..."
+          git fetch origin
+          git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
+        else
+          # otherwise, check it out - note stores credentials in .git via the remote origin url
+          git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_OWNER}/${GITHUB_REPO}.git .
+        fi
+        END_TIME=$(date +%s)
+        ELAPSED_TIME=$((END_TIME - START_TIME))
+        echo "took: $${ELAPSED_TIME} seconds"
     restart: on-failure
     volumes:
       - portainer_stacks:/mnt/portainer-stacks
