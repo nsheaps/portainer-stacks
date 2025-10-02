@@ -48,7 +48,7 @@ services:
   # for agents (where the agent runs the stack instead of the root instance, not typical of
   # docker-compose setups
   git-checkout:
-    image: bitnami/git:latest
+    image: alpine/git:latest
     working_dir: /tmp
     command: >
       bash -c '
