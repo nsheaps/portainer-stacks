@@ -52,7 +52,7 @@ services:
     working_dir: /tmp
     entrypoint: ["/bin/sh"]
     command: >
-      sh -c '
+      /bin/sh -c '
         set -euo pipefail
         cd /mnt/portainer-stacks
         # if the git repository has already been initialized
