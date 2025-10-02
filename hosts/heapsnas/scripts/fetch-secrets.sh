@@ -40,6 +40,7 @@ fetch "op://heapsinfra/portainer--heapsnas--n8n--db/db" "/run/secrets/postgres_d
 fetch "op://heapsinfra/portainer--heapsnas--n8n--db/username" "/run/secrets/postgres_user" &
 fetch "op://heapsinfra/portainer--heapsnas--n8n--db/password" "/run/secrets/postgres_password" &
 fetch "op://heapsinfra/portainer--heapsnas--n8n/encryption_key" "/run/secrets/n8n_encryption_key" &
+fetch "op://heapsinfra/portainer--heapsnas--cloudflared/token" "/run/secrets/cloudflared_token" &
 
 # Wait for all background jobs to complete
 wait

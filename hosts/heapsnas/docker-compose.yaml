@@ -97,6 +97,16 @@ services:
         "/mnt/portainer-stacks/hosts/heapsnas/scripts/fetch-secrets.sh || { sleep 300; exit 1; }",
       ]
 
+  cloudflared:
+    image: cloudflare/cloudflared:2024.6.1
+    restart: always
+    command: tunnel --no-autoupdate run --token-file /run/secrets/cloudflared_token
+    volumes:
+      - secrets_volume:/run/secrets:ro
+    depends_on:
+      secrets-init:
+        condition: service_completed_successfully
+
   postgres:
     image: postgres:18
     restart: always
