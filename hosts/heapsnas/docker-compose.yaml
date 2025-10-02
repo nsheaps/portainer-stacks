@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
-name: 'heapsnas'
+name: "heapsnas"
 
 # Set in env on portainer:
 # - GITHUB_TOKEN = <pat portainer uses>
@@ -76,7 +76,7 @@ services:
   # Init container to fetch secrets from 1Password
   secrets-init:
     image: 1password/op:2
-    user: '0:0' # Run as root for putting in the secrets dir
+    user: "0:0" # Run as root for putting in the secrets dir
     environment:
       # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
       - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
@@ -89,8 +89,8 @@ services:
         restart: true
     command:
       [
-        '/bin/bash',
-        '/mnt/portainer-stacks/hosts/gather-mbp/scripts/fetch-secrets.sh',
+        "/bin/bash",
+        "/mnt/portainer-stacks/hosts/heapsnas/scripts/fetch-secrets.sh",
       ]
 
   postgres:
@@ -110,12 +110,12 @@ services:
         source: portainer_stacks
         target: /docker-entrypoint-initdb.d/init-postgres.sh
         volume:
-          subpath: hosts/gather-mbp/scripts/init-postgres.sh
+          subpath: hosts/heapsnas/scripts/init-postgres.sh
     healthcheck:
       test:
         [
-          'CMD-SHELL',
-          'pg_isready -h localhost -U $(cat $${POSTGRES_USER_FILE}) -d $(cat $${N8N_POSTGRES_DB_FILE:-does_not_exist})',
+          "CMD-SHELL",
+          "pg_isready -h localhost -U $(cat $${POSTGRES_USER_FILE}) -d $(cat $${N8N_POSTGRES_DB_FILE:-does_not_exist})",
         ]
       interval: 5s
       timeout: 5s
@@ -134,7 +134,7 @@ services:
     volumes:
       - redis_storage:/data
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -142,7 +142,7 @@ services:
   n8n:
     <<: *shared
     ports:
-      - '${N8N_PORT:-5678}:5678'
+      - "${N8N_PORT:-5678}:5678"
 
   n8n-worker:
     <<: *shared
