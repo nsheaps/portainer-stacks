@@ -98,7 +98,7 @@ services:
       ]
 
   cloudflared:
-    image: cloudflare/cloudflared:2024.6.1
+    image: cloudflare/cloudflared:2025.9.1
     restart: always
     command: tunnel --no-autoupdate run --token-file /run/secrets/cloudflared_token
     volumes:
