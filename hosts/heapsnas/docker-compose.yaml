@@ -50,9 +50,10 @@ services:
   git-checkout:
     image: alpine/git:latest
     working_dir: /tmp
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: ["/bin/sh"]
     command: >
       set -euo pipefail
+      set -x
       cd /mnt/portainer-stacks
       echo if the git repository has already been initialized
       echo fetch and reset to the latest HEAD on the remote default
