@@ -37,10 +37,6 @@ echo "Fetching all secrets in parallel..."
 fetch "op://heapsinfra/portainer--heapsnas--postgres--root-user/username" "/run/secrets/postgres_root_user" &
 fetch "op://heapsinfra/portainer--heapsnas--postgres--root-user/password" "/run/secrets/postgres_root_password" &
 fetch "op://heapsinfra/portainer--heapsnas--n8n--db/db" "/run/secrets/postgres_db" &
-fetch "op://heapsinfra/portainer--heapsnas--postgres--root-user/username" "/run/secrets/postgres_root_user" &
-fetch "op://heapsinfra/portainer--heapsnas--postgres--root-user/password" "/run/secrets/postgres_root_password" &
-fetch "op://heapsinfra/portainer--heapsnas--n8n--db/db" "/run/secrets/postgres_db" &
-fetch "op://heapsinfra/portainer--heapsnas--n8n--db/username" "/run/secrets/postgres_user" &
 fetch "op://heapsinfra/portainer--heapsnas--n8n--db/username" "/run/secrets/postgres_user" &
 fetch "op://heapsinfra/portainer--heapsnas--n8n--db/password" "/run/secrets/postgres_password" &
 fetch "op://heapsinfra/portainer--heapsnas--n8n/encryption_key" "/run/secrets/n8n_encryption_key" &
