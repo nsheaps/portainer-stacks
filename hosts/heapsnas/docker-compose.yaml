@@ -55,9 +55,9 @@ services:
       /bin/sh -c '
         set -euo pipefail
         cd /mnt/portainer-stacks
-        # if the git repository has already been initialized
-        # fetch and reset to the latest HEAD on the remote default
-        # branch
+        echo if the git repository has already been initialized
+        echo fetch and reset to the latest HEAD on the remote default
+        echo branch
         START_TIME=$(date +%s)
         if [ -d .git ]; then
           echo "Fetching and resetting to HEAD of default branch on remote..."
