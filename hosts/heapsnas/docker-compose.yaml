@@ -51,7 +51,7 @@ services:
     image: alpine/git:latest
     working_dir: /tmp
     command: >
-      bash -c '
+      sh -c '
         set -euo pipefail
         cd /mnt/portainer-stacks
         # if the git repository has already been initialized
