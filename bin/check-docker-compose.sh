@@ -60,7 +60,7 @@ check_files() {
 }
 
 if ! check_files "$@"; then
-    echo "Some compose files failed"
+    echo "Some compose files failed (engine: $COMPOSE)" >&2
 fi
 
 exit $has_error

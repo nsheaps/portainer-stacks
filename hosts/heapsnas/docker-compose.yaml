@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
-name: "heapsnas"
+name: 'heapsnas'
 
 # Set in env on portainer:
 # - GITHUB_TOKEN = <pat portainer uses>
@@ -55,7 +55,7 @@ services:
   git-checkout:
     image: alpine/git:latest
     working_dir: /tmp
-    entrypoint: ["/bin/sh"]
+    entrypoint: ['/bin/sh']
     command:
       - -c
       - |
@@ -74,17 +74,20 @@ services:
           # otherwise, check it out - note stores credentials in .git via the remote origin url
           git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_OWNER}/${GITHUB_REPO}.git .
         fi
+        rm -rf /mnt/postgres_init/*
+        cp -R /mnt/portainer-stacks/hosts/heapsnas/volumes/postgres_init /mnt/postgres_init
         END_TIME=$(date +%s)
         ELAPSED_TIME=$((END_TIME - START_TIME))
         echo "took: $${ELAPSED_TIME} seconds"
     restart: on-failure
     volumes:
       - portainer_stacks:/mnt/portainer-stacks
+      - postgres_init:/mnt/postgres_init
 
   # Init container to fetch secrets from 1Password
   secrets-init:
     image: 1password/op:2
-    user: "0:0" # Run as root for putting in the secrets dir
+    user: '0:0' # Run as root for putting in the secrets dir
     environment:
       # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
       - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
@@ -97,9 +100,9 @@ services:
         restart: true
     command:
       [
-        "/bin/bash",
-        "-c",
-        "/mnt/portainer-stacks/hosts/heapsnas/scripts/fetch-secrets.sh || { sleep 300; exit 1; }",
+        '/bin/bash',
+        '-c',
+        '/mnt/portainer-stacks/hosts/heapsnas/scripts/fetch-secrets.sh || { sleep 300; exit 1; }',
       ]
 
   cloudflared:
@@ -125,16 +128,18 @@ services:
       - db_storage:/var/lib/postgresql/data
       - secrets_volume:/run/secrets:ro
       - portainer_stacks:/mnt/portainer-stacks
-      - type: volume
-        source: portainer_stacks
-        target: /docker-entrypoint-initdb.d/init-postgres.sh
-        volume:
-          subpath: hosts/heapsnas/scripts/init-postgres.sh
+      - postgres_init:/docker-entrypoint-initdb.d:ro
+      # - type: volume
+      #   source: portainer_stacks
+      #   target: /docker-entrypoint-initdb.d/init-postgres.sh
+      #   read_only: true
+      #   volume:
+      #     subpath: hosts/heapsnas/scripts/init-postgres.sh
     healthcheck:
       test:
         [
-          "CMD-SHELL",
-          "pg_isready -h localhost -U $(cat $${POSTGRES_USER_FILE}) -d $(cat $${N8N_POSTGRES_DB_FILE:-does_not_exist})",
+          'CMD-SHELL',
+          'pg_isready -h localhost -U $(cat $${POSTGRES_USER_FILE}) -d $(cat $${N8N_POSTGRES_DB_FILE:-does_not_exist})',
         ]
       interval: 5s
       timeout: 5s
@@ -153,7 +158,7 @@ services:
     volumes:
       - redis_storage:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -161,7 +166,7 @@ services:
   n8n:
     <<: *shared
     ports:
-      - "${N8N_PORT:-5678}:5678"
+      - '${N8N_PORT:-5678}:5678'
 
   n8n-worker:
     <<: *shared
@@ -171,6 +176,9 @@ services:
 
 volumes:
   portainer_stacks:
+    driver: local
+  postgres_init:
+    driver: local
   db_storage:
     driver: local
   n8n_storage:

@@ -24,5 +24,8 @@
   "yaml.completion": true,
   "yaml.schemas": {
     "https://json.schemastore.org/docker-compose.json": "**/docker-compose*.yml"
+  },
+  "debug.javascript.defaultRuntimeExecutable": {
+    "pwa-node": "/home/nsheaps/snap/code/208/.local/share/mise/shims/node"
   }
 }

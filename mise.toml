@@ -1,0 +1,4 @@
+[tools]
+node = "22"
+yarn = "4.10.3"
+direnv = "latest"
