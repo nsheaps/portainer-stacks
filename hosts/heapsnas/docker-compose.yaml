@@ -182,11 +182,11 @@ services:
   copy-data:
     volumes:
       - n8n_storage:/n8n_from
-      - n8n-storage:/n8n_to:rw
+      - n8n_n8n-storage:/n8n_to:rw
       - db_storage:/db_from
-      - postgresql-storage:/db_to:rw
+      - postgresql_postgresql-storage:/db_to:rw
       - redis_storage:/redis_from
-      - redis-storage:/redis_to:rw
+      - redis_redis-storage:/redis_to:rw
     image: alpine:latest
     command:
       - /bin/ash
