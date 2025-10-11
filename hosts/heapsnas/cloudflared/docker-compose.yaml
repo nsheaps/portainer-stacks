@@ -51,7 +51,6 @@ services:
     networks:
       - cloudflared
 
-
 # https://docs.docker.com/engine/storage/drivers/
 volumes:
   cloudflare-secrets:

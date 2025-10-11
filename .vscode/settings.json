@@ -27,5 +27,9 @@
   },
   "debug.javascript.defaultRuntimeExecutable": {
     "pwa-node": "/home/nsheaps/snap/code/210/.local/share/mise/shims/node"
+  },
+  "go.goroot": "/home/nsheaps/snap/code/210/.local/share/mise/installs/go/1.25.2",
+  "go.alternateTools": {
+    "go": "/home/nsheaps/snap/code/210/.local/share/mise/shims/go"
   }
 }

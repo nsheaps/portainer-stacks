@@ -5,7 +5,7 @@ To use, [include](https://docs.docker.com/compose/how-tos/multiple-compose-files
 ```yaml
 # hosts/HOSTNAME/STACKNAME/docker-compose.yaml
 include:
- - ../../../apps/APPNAME/docker-compose.yaml
+  - ../../../apps/APPNAME/docker-compose.yaml
 ```
 
 They can ONLY be re-used if ALL values are the same.
