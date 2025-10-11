@@ -52,6 +52,8 @@ services:
     volumes:
       - postgresql-secrets:/run/secrets:ro
       - postgresql-storage:/var/lib/postgresql/data
+    networks:
+      - postgresql
     healthcheck:
       test:
         [
