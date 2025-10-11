@@ -26,9 +26,9 @@ x-shared: &shared
     - N8N_PROXY_HOPS=1
   networks:
     # we use external networks so we can share with other stacks
-    - cloudflared_cloudflared
-    - postgresql_postgresql
-    - redis_redis
+    - cloudflared
+    - postgresql
+    - redis
   volumes:
     - n8n-storage:/home/node/.n8n
     - n8n-secrets:/run/secrets:ro
@@ -91,9 +91,9 @@ volumes:
     driver: local
 
 networks:
-  cloudflared_cloudflared:
+  cloudflared:
     external: true
-  postgresql_postgresql:
+  postgresql:
     external: true
-  redis_redis:
+  redis:
     external: true
