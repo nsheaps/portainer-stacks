@@ -26,6 +26,7 @@ services:
           function fetch() {
               local ref="$1"
               local dest="$2"
+              echo " getting '$ref' => '$dest'"
               op read --no-newline "$ref" > "$dest"
               echo " got '$ref' => '$dest'"
               COUNT=$((COUNT + 1))
