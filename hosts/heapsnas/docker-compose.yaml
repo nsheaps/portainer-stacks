@@ -204,11 +204,11 @@ services:
 
 volumes:
   # add the external volumes from the new stacks
-  n8n-storage:
+  n8n_n8n-storage:
     external: true
-  postgresql-storage:
+  postgresql_postgresql-storage:
     external: true
-  redis-storage:
+  redis_redis-storage:
     external: true
   portainer_stacks:
     driver: local
