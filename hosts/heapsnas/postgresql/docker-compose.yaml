@@ -17,7 +17,6 @@ services:
       - /bin/bash
       - -c
       - |
-        sleep 10000
         set -euo pipefail
         {
           function fetch() {
