@@ -91,12 +91,9 @@ volumes:
     driver: local
 
 networks:
-  cloudflared:
-    external:
-      name: cloudflared
-  postgresql:
-    external:
-      name: postgresql
-  redis:
-    external:
-      name: redis
+  cloudflared_cloudflared:
+    external: true
+  postgresql_postgresql:
+    external: true
+  redis_redis:
+    external: true
