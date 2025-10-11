@@ -2,9 +2,6 @@
 name: 'cloudflared'
 
 # Set in env on portainer:
-# - GITHUB_TOKEN = <pat portainer uses>
-# - GITHUB_REPO_OWNER = nsheaps
-# - GITHUB_REPO_NAME = portainer-stacks
 # - OP_SERVICE_ACCOUNT_TOKEN for secrets fetching
 
 services:
