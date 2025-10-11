@@ -1,0 +1,106 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+name: 'n8n'
+
+# Set in env on portainer:
+# - OP_SERVICE_ACCOUNT_TOKEN for secrets fetching
+
+x-shared: &shared
+  restart: always
+  image: docker.n8n.io/n8nio/n8n:1.115.2
+  environment:
+    # ref: https://docs.n8n.io/hosting/configuration/environment-variables/
+    - DB_TYPE=postgresdb
+    - DB_POSTGRESDB_HOST=postgres
+    - DB_POSTGRESDB_PORT=5432
+    - DB_POSTGRESDB_DATABASE_FILE=/run/secrets/postgres_db
+    - DB_POSTGRESDB_USER_FILE=/run/secrets/postgres_user
+    - DB_POSTGRESDB_PASSWORD_FILE=/run/secrets/postgres_password
+    - EXECUTIONS_MODE=queue
+    - QUEUE_BULL_REDIS_HOST=redis
+    - QUEUE_HEALTH_CHECK_ACTIVE=true
+    - N8N_ENCRYPTION_KEY_FILE=/run/secrets/n8n_encryption_key
+    - N8N_RUNNERS_ENABLED=true
+    - N8N_EDITOR_BASE_URL=https://n8n.heaps.cloud
+    - # https://docs.n8n.io/hosting/configuration/configuration-examples/webhook-url/
+      WEBHOOK_URL=https://n8n.heaps.cloud/
+    - N8N_PROXY_HOPS=1
+  networks:
+    # we use external networks so we can share with other stacks
+    - cloudflared
+    - postgresql
+    - redis
+  volumes:
+    - n8n-storage:/home/node/.n8n
+    - n8n-secrets:/run/secrets:ro
+  depends_on:
+    redis:
+      condition: service_healthy
+    postgres:
+      condition: service_healthy
+    init-secrets:
+      condition: service_completed_successfully
+
+services:
+  init-secrets:
+    image: 1password/op:2
+    user: '0:0' # Run as root for putting in the secrets dir
+    environment:
+      # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
+      - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
+    volumes:
+      - n8n-secrets:/run/secrets:rw
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -euo pipefail
+        {
+          function fetch() {
+              local ref="$$1"
+              local dest="$$2"
+              op read --no-newline "$$ref" > "$$dest"
+              echo " got '$$ref' => '$$dest'"
+          }
+          echo "Fetching all secrets in parallel..."
+
+          fetch "op://heapsinfra/portainer--heapsnas--n8n--db/db" "/run/secrets/postgres_db" &
+          fetch "op://heapsinfra/portainer--heapsnas--n8n--db/username" "/run/secrets/postgres_user" &
+          fetch "op://heapsinfra/portainer--heapsnas--n8n--db/password" "/run/secrets/postgres_password" &
+          fetch "op://heapsinfra/portainer--heapsnas--n8n/encryption_key" "/run/secrets/n8n_encryption_key" &
+
+          wait
+          chmod 444 /run/secrets/*
+        } || {
+          echo "Failed to fetch secrets, waiting 5 minutes before exiting"
+          sleep 300
+          exit 1
+        }
+
+  n8n:
+    <<: *shared
+    ports:
+      - '${N8N_PORT:-5678}:5678'
+
+  n8n-worker:
+    <<: *shared
+    command: worker
+    depends_on:
+      - n8n
+
+# https://docs.docker.com/engine/storage/drivers/
+volumes:
+  n8n-storage:
+    driver: local
+  n8n-secrets:
+    driver: local
+
+networks:
+  cloudflared:
+    external:
+      name: cloudflared
+  postgresql:
+    external:
+      name: postgresql
+  redis:
+    external:
+      name: redis

@@ -17,15 +17,14 @@ services:
       - /bin/bash
       - -c
       - |
+        sleep 10000
         set -euo pipefail
         {
-          COUNT=0
           function fetch() {
               local ref="$$1"
               local dest="$$2"
               op read --no-newline "$$ref" > "$$dest"
               echo " got '$$ref' => '$$dest'"
-              COUNT=$$((COUNT + 1))
           }
           echo "Fetching all secrets in parallel..."
 
@@ -34,7 +33,6 @@ services:
 
           wait
           chmod 444 /run/secrets/*
-          echo "Fetched $$COUNT secrets"
         } || {
           echo "Failed to fetch secrets, waiting 5 minutes before exiting"
           sleep 300
@@ -66,7 +64,6 @@ services:
     depends_on:
       init-secrets:
         condition: service_completed_successfully
-        restart: true
 
 # https://docs.docker.com/engine/storage/drivers/
 volumes:
@@ -78,3 +75,4 @@ volumes:
 networks:
   postgresql:
     driver: bridge
+    name: postgresql

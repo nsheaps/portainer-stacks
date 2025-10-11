@@ -14,6 +14,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    command: ["sleep", "10000"] # delay start for secrets fetching
 
 volumes:
   redis-storage:
@@ -22,3 +23,4 @@ volumes:
 networks:
   redis:
     driver: bridge
+    name: redis

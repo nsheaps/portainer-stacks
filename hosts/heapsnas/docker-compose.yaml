@@ -85,96 +85,131 @@ services:
       - postgres_init:/mnt/postgres_init
 
   # Init container to fetch secrets from 1Password
-  secrets-init:
-    image: 1password/op:2
-    user: '0:0' # Run as root for putting in the secrets dir
-    environment:
-      # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
-      - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
-    volumes:
-      - secrets_volume:/run/secrets:rw
-      - portainer_stacks:/mnt/portainer-stacks
-    depends_on:
-      git-checkout:
-        condition: service_completed_successfully
-        restart: true
-    command:
-      [
-        '/bin/bash',
-        '-c',
-        '/mnt/portainer-stacks/hosts/heapsnas/scripts/fetch-secrets.sh || { sleep 300; exit 1; }',
-      ]
+  # secrets-init:
+  #   image: 1password/op:2
+  #   user: '0:0' # Run as root for putting in the secrets dir
+  #   environment:
+  #     # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
+  #     - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
+  #   volumes:
+  #     - secrets_volume:/run/secrets:rw
+  #     - portainer_stacks:/mnt/portainer-stacks
+  #   depends_on:
+  #     git-checkout:
+  #       condition: service_completed_successfully
+  #       restart: true
+  #   command:
+  #     [
+  #       '/bin/bash',
+  #       '-c',
+  #       '/mnt/portainer-stacks/hosts/heapsnas/scripts/fetch-secrets.sh || { sleep 300; exit 1; }',
+  #     ]
 
-  cloudflared:
-    image: cloudflare/cloudflared:2025.9.1
-    restart: always
-    command: tunnel --no-autoupdate run --token-file /run/secrets/cloudflared_token
-    volumes:
-      - secrets_volume:/run/secrets:ro
-    depends_on:
-      secrets-init:
-        condition: service_completed_successfully
+  # cloudflared:
+  #   image: cloudflare/cloudflared:2025.9.1
+  #   restart: always
+  #   command: tunnel --no-autoupdate run --token-file /run/secrets/cloudflared_token
+  #   volumes:
+  #     - secrets_volume:/run/secrets:ro
+  #   depends_on:
+  #     secrets-init:
+  #       condition: service_completed_successfully
 
-  postgres:
-    image: postgres:18
-    restart: always
-    environment:
-      - POSTGRES_USER_FILE=/run/secrets/postgres_root_user
-      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_root_password
-      - # We don't want to use the n8n one here because the init job takes care of it
-        N8N_POSTGRES_DB_FILE=/run/secrets/postgres_db
-        POSTGRES_DB=postgres
-    volumes:
-      - db_storage:/var/lib/postgresql/data
-      - secrets_volume:/run/secrets:ro
-      - portainer_stacks:/mnt/portainer-stacks
-      - postgres_init:/docker-entrypoint-initdb.d:ro
-      # - type: volume
-      #   source: portainer_stacks
-      #   target: /docker-entrypoint-initdb.d/init-postgres.sh
-      #   read_only: true
-      #   volume:
-      #     subpath: hosts/heapsnas/scripts/init-postgres.sh
-    healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'pg_isready -h localhost -U $(cat $${POSTGRES_USER_FILE}) -d $(cat $${N8N_POSTGRES_DB_FILE:-does_not_exist})',
-        ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    depends_on:
-      secrets-init:
-        condition: service_completed_successfully
+  # postgres:
+  #   image: postgres:18
+  #   restart: always
+  #   environment:
+  #     - POSTGRES_USER_FILE=/run/secrets/postgres_root_user
+  #     - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_root_password
+  #     - # We don't want to use the n8n one here because the init job takes care of it
+  #       N8N_POSTGRES_DB_FILE=/run/secrets/postgres_db
+  #       POSTGRES_DB=postgres
+  #   volumes:
+  #     - db_storage:/var/lib/postgresql/data
+  #     - secrets_volume:/run/secrets:ro
+  #     - portainer_stacks:/mnt/portainer-stacks
+  #     - postgres_init:/docker-entrypoint-initdb.d:ro
+  #     # - type: volume
+  #     #   source: portainer_stacks
+  #     #   target: /docker-entrypoint-initdb.d/init-postgres.sh
+  #     #   read_only: true
+  #     #   volume:
+  #     #     subpath: hosts/heapsnas/scripts/init-postgres.sh
+  #   healthcheck:
+  #     test:
+  #       [
+  #         'CMD-SHELL',
+  #         'pg_isready -h localhost -U $(cat $${POSTGRES_USER_FILE}) -d $(cat $${N8N_POSTGRES_DB_FILE:-does_not_exist})',
+  #       ]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 10
+  #   depends_on:
+  #     secrets-init:
+  #       condition: service_completed_successfully
         # we don't want to restart every time this is
         # restarted, since every update restarts this, which would cause
         # downtime.
         # restart: true
 
-  redis:
-    image: redis:8-alpine
-    restart: always
+  # redis:
+  #   image: redis:8-alpine
+  #   restart: always
+  #   volumes:
+  #     - redis_storage:/data
+  #   healthcheck:
+  #     test: ['CMD', 'redis-cli', 'ping']
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 10
+
+  # n8n:
+  #   <<: *shared
+  #   ports:
+  #     - '${N8N_PORT:-5678}:5678'
+
+  # n8n-worker:
+  #   <<: *shared
+  #   command: worker
+  #   depends_on:
+  #     - n8n
+  # TODO: add a container to migrate data:
+  # docker run --rm -it \
+  #   -v <old-volume-name>:/from:ro \
+  #   -v <new-volume-name>:/to \
+  #   alpine \
+  #   ash -c "cp -av /from/. /to"
+  copy-data:
     volumes:
-      - redis_storage:/data
-    healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
-  n8n:
-    <<: *shared
-    ports:
-      - '${N8N_PORT:-5678}:5678'
-
-  n8n-worker:
-    <<: *shared
-    command: worker
-    depends_on:
-      - n8n
+      - n8n_storage:/n8n_from
+      - n8n-storage:/n8n_to:rw
+      - db_storage:/db_from
+      - postgresql-storage:/db_to:rw
+      - redis_storage:/redis_from
+      - redis-storage:/redis_to:rw
+    image: alpine:latest
+    command:
+      - /bin/ash
+      - -c
+      - |
+        set -euo pipefail
+        echo "Copying n8n data..."
+        cp -av /n8n_from/. /n8n_to/
+        echo "Copying Postgres data..."
+        cp -av /db_from/. /db_to/
+        echo "Copying Redis data..."
+        cp -av /redis_from/. /redis_to/
+    # run once and remove
+    restart: 'no'
 
 volumes:
+  # add the external volumes from the new stacks
+  n8n-storage:
+    external: true
+  postgresql-storage:
+    external: true
+  redis-storage:
+    external: true
   portainer_stacks:
     driver: local
   postgres_init:
