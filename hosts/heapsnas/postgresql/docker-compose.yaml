@@ -50,6 +50,7 @@ services:
       - # default DB, don't use for apps
         POSTGRES_DB=postgres
     volumes:
+      - postgresql-secrets:/run/secrets:ro
       - postgresql-storage:/var/lib/postgresql/data
     healthcheck:
       test:
