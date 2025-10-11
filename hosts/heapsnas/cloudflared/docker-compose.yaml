@@ -20,8 +20,8 @@ services:
       - /bin/bash
       - -c
       - |
+        set -euo pipefail
         {
-          set -euo pipefail
           COUNT=0
           function fetch() {
               local ref="$1"
