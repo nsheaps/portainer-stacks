@@ -10,7 +10,7 @@ x-shared: &shared
   environment:
     # ref: https://docs.n8n.io/hosting/configuration/environment-variables/
     - DB_TYPE=postgresdb
-    - DB_POSTGRESDB_HOST=postgres
+    - DB_POSTGRESDB_HOST=postgresql
     - DB_POSTGRESDB_PORT=5432
     - DB_POSTGRESDB_DATABASE_FILE=/run/secrets/postgres_db
     - DB_POSTGRESDB_USER_FILE=/run/secrets/postgres_user
