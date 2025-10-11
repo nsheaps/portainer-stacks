@@ -41,7 +41,7 @@ services:
           exit 1
         }
 
-  postgres:
+  postgresql:
     image: postgres:18
     restart: always
     environment:
