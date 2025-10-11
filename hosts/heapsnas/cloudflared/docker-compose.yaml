@@ -16,30 +16,32 @@ services:
       - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
     volumes:
       - cloudflare-secrets:/run/secrets:rw
-    command: |
-      /bin/bash -c '
-        set -euo pipefail
-        COUNT=0
-        function fetch() {
-            local ref="$1"
-            local dest="$2"
-            op read --no-newline "$ref" > "$dest"
-            echo " got '$ref' => '$dest'"
-            COUNT=$((COUNT + 1))
+    command:
+      - /bin/bash
+      - -c
+      - |
+        {
+          set -euo pipefail
+          COUNT=0
+          function fetch() {
+              local ref="$1"
+              local dest="$2"
+              op read --no-newline "$ref" > "$dest"
+              echo " got '$ref' => '$dest'"
+              COUNT=$((COUNT + 1))
+          }
+          echo "Fetching all secrets in parallel..."
+
+          fetch "op://heapsinfra/portainer--heapsnas--cloudflared/token" "/run/secrets/cloudflared_token" &
+
+          wait
+          chmod 444 /run/secrets/*
+          echo "Fetched $COUNT secrets"
+        } || {
+          echo "Failed to fetch secrets, waiting 5 minutes before failing"
+          sleep 300
+          exit 1
         }
-        echo "Fetching all secrets in parallel..."
-
-        fetch "op://heapsinfra/portainer--heapsnas--cloudflared/token" "/run/secrets/cloudflared_token" &
-
-        wait
-        chmod 444 /run/secrets/*
-        echo "Fetched $COUNT secrets"
-      ' || {
-        echo "Failed to fetch secrets, waiting 5 minutes before failing"
-        sleep 300
-        exit 1
-      }
-
   cloudflared:
     image: cloudflare/cloudflared:2025.9.1
     restart: always
