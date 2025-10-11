@@ -80,12 +80,10 @@ services:
     <<: *shared
     ports:
       - '${N8N_PORT:-5678}:5678'
-    entrypoint: ["sleep", "5000"]
 
   n8n-worker:
     <<: *shared
-    # command: worker
-    entrypoint: ["sleep", "5000"]
+    command: worker
     depends_on:
       - n8n
 
