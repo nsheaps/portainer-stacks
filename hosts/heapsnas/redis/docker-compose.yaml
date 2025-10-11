@@ -9,11 +9,11 @@ services:
       - redis-storage:/data
     networks:
       - redis
-    healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
-      interval: 5s
-      timeout: 5s
-      retries: 10
+    # healthcheck:
+    #   test: ['CMD', 'redis-cli', 'ping']
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 10
     command: ["sleep", "10000"] # delay start for secrets fetching
 
 volumes:
