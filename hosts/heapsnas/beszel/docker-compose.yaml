@@ -73,6 +73,7 @@ services:
       HUB_URL: https://beszel.heaps.cloud
       KEY_FILE: /run/secrets/beszel_agent_key
       TOKEN_FILE: /run/secrets/beszel_agent_token
+      LOG_LEVEL: debug
 
 # https://docs.docker.com/engine/storage/drivers/
 volumes:
