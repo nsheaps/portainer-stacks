@@ -18,7 +18,7 @@ services:
           function fetch() {
               local ref="$$1"
               local dest="$$2"
-              op read --no-newline "$$ref" > "$$dest"
+              op read "$$ref" > "$$dest"
               echo " got '$$ref' => '$$dest'"
           }
           echo "Fetching all secrets in parallel..."
