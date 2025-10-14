@@ -1,10 +1,47 @@
 name: beszel
 
 services:
+  init-secrets:
+    image: 1password/op:2
+    user: '0:0' # Run as root for putting in the secrets dir
+    environment:
+      # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
+      - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
+    volumes:
+      - beszel-secrets:/run/secrets:rw
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -euo pipefail
+        {
+          function fetch() {
+              local ref="$$1"
+              local dest="$$2"
+              op read --no-newline "$$ref" > "$$dest"
+              echo " got '$$ref' => '$$dest'"
+          }
+          echo "Fetching all secrets in parallel..."
+
+          fetch "op://heapsinfra/portainer--heapsnas--beszel/agent_key" "/run/secrets/beszel_agent_key" &
+          fetch "op://heapsinfra/portainer--heapsnas--beszel/agent_token" "/run/secrets/beszel_agent_token" &
+
+          wait
+          chmod 444 /run/secrets/*
+        } || {
+          echo "Failed to fetch secrets, waiting 5 minutes before exiting"
+          sleep 300
+          exit 1
+        }
   beszel-hub:
     image: henrygd/beszel:latest
     container_name: beszel
     restart: unless-stopped
+    healthcheck:
+      # The URL is relative to the container, not the host
+      test: ['CMD', '/beszel', 'health', '--url', 'http://localhost:8090']
+      start_period: 5s # Check 5 seconds after the container starts
+      interval: 60s # Then check every 60 seconds after that
     networks:
       - cloudflared
     ports:
@@ -13,28 +50,34 @@ services:
       - ./beszel_data:/beszel_data
       - ./beszel_socket:/beszel_socket
 
-  # We'll deploy the agent using a binary instead of a container:
-  # https://beszel.dev/guide/agent-installation#binary
-  # beszel-agent:
-  #   image: henrygd/beszel-agent:latest
-  #   container_name: beszel-agent
-  #   restart: unless-stopped
-  #   network_mode: host
-  #   volumes:
-  #     - ./beszel_agent_data:/var/lib/beszel-agent
-  #     - ./beszel_socket:/beszel_socket
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #   environment:
-  #     LISTEN: /beszel_socket/beszel.sock
-  #     HUB_URL: http://localhost:8090
-  #     TOKEN: <token>
-  #     KEY: "<key>"
+  # The binary agent runs a service, and the NAS doesn't have systemd to manage it.
+  # So we run it in a container instead
+  beszel-agent:
+    image: henrygd/beszel-agent
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - beszel-secrets:/run/secrets:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./beszel_agent_data:/var/lib/beszel-agent
+      # monitor other disks / partitions by mounting a folder in /extra-filesystems
+      # - /mnt/disk/.beszel:/extra-filesystems/sda1:ro
+    environment:
+      # We want this to go through cloudflare so it's the same as all the others, rather
+      # than sending it straight to the beszel socket
+      LISTEN: 45876
+      HUB_URL: https://beszel.heaps.cloud
+      KEY_FILE: /run/secrets/beszel_agent_key
+      TOKEN_FILE: /run/secrets/beszel_agent_token
 
 # https://docs.docker.com/engine/storage/drivers/
 volumes:
   beszel_data:
     driver: local
   beszel_socket:
+    driver: local
+  beszel-secrets:
     driver: local
 
 networks:
