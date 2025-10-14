@@ -5,6 +5,8 @@ services:
     image: henrygd/beszel:latest
     container_name: beszel
     restart: unless-stopped
+    environment:
+      APP_URL: https://beszel.heaps.cloud
     healthcheck:
       # The URL is relative to the container, not the host
       test: ['CMD', '/beszel', 'health', '--url', 'http://localhost:8090']
