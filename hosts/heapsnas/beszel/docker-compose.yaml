@@ -1,3 +1,5 @@
+name: beszel
+
 services:
   beszel-hub:
     image: henrygd/beszel:latest
