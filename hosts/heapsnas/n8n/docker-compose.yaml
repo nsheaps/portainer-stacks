@@ -123,9 +123,6 @@ services:
         EOF
 
         echo "Database initialization completed!"
-    depends_on:
-      postgresql:
-        condition: service_healthy
 
   n8n:
     <<: *shared
