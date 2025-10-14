@@ -83,6 +83,9 @@ services:
       - n8n-secrets:/run/secrets:ro
     networks:
       - postgresql
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_root_password
+      - POSTGRES_USER_FILE=/run/secrets/postgres_root_user
     command:
       - /bin/bash
       - -c
@@ -93,11 +96,9 @@ services:
           DB_NAME=$(cat /run/secrets/postgres_db)
           DB_USER=$(cat /run/secrets/postgres_user)
           DB_PASSWORD=$(cat /run/secrets/postgres_password)
-          ROOT_USER=$(cat /run/secrets/postgres_root_user)
-          export PGPASSWORD=$(cat /run/secrets/postgres_root_password)
 
           # Create database and user if they don't exist, then grant permissions
-          psql -h postgresql -U "$$ROOT_USER" -d postgres << EOF
+          psql -h postgresql -d postgres << EOF
         DO \$\$
         BEGIN
           -- Create database if not exists
