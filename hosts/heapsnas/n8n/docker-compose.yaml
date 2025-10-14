@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
-name: "n8n"
+name: 'n8n'
 
 # Set in env on portainer:
 # - OP_SERVICE_ACCOUNT_TOKEN for secrets fetching
@@ -35,13 +35,11 @@ x-shared: &shared
   depends_on:
     init-secrets:
       condition: service_completed_successfully
-    init-database:
-      condition: service_completed_successfully
 
 services:
   init-secrets:
     image: 1password/op:2
-    user: "0:0" # Run as root for putting in the secrets dir
+    user: '0:0' # Run as root for putting in the secrets dir
     environment:
       # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
       - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
@@ -61,8 +59,6 @@ services:
           }
           echo "Fetching all secrets in parallel..."
 
-          fetch "op://heapsinfra/portainer--heapsnas--postgres--root-user/username" "/run/secrets/postgres_root_user" &
-          fetch "op://heapsinfra/portainer--heapsnas--postgres--root-user/password" "/run/secrets/postgres_root_password" &
           fetch "op://heapsinfra/portainer--heapsnas--n8n--db/db" "/run/secrets/postgres_db" &
           fetch "op://heapsinfra/portainer--heapsnas--n8n--db/username" "/run/secrets/postgres_user" &
           fetch "op://heapsinfra/portainer--heapsnas--n8n--db/password" "/run/secrets/postgres_password" &
@@ -76,65 +72,10 @@ services:
           exit 1
         }
 
-  init-database:
-    image: postgres:18
-    user: "0:0"
-    volumes:
-      - n8n-secrets:/run/secrets:ro
-    networks:
-      - postgresql
-    environment:
-      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_root_password
-      - POSTGRES_USER_FILE=/run/secrets/postgres_root_user
-    command:
-      - /bin/bash
-      - -c
-      - |
-        set -euo pipefail
-        {
-          # Load credentials
-          DB_NAME=$(cat /run/secrets/postgres_db)
-          DB_USER=$(cat /run/secrets/postgres_user)
-          DB_PASSWORD=$(cat /run/secrets/postgres_password)
-
-          # Create database and user if they don't exist, then grant permissions
-          psql -h postgresql -d postgres << EOF
-        DO \$\$
-        BEGIN
-          -- Create database if not exists
-          IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '$$DB_NAME') THEN
-            CREATE DATABASE "$$DB_NAME";
-            RAISE NOTICE 'Created database: $$DB_NAME';
-          ELSE
-            RAISE NOTICE 'Database $$DB_NAME already exists';
-          END IF;
-
-          -- Create user if not exists
-          IF NOT EXISTS (SELECT FROM pg_user WHERE usename = '$$DB_USER') THEN
-            EXECUTE format('CREATE USER "$$DB_USER" WITH PASSWORD ''%s''', '$$DB_PASSWORD');
-            RAISE NOTICE 'Created user: $$DB_USER';
-          ELSE
-            RAISE NOTICE 'User $$DB_USER already exists';
-          END IF;
-
-          -- Grant permissions
-          GRANT ALL PRIVILEGES ON DATABASE "$$DB_NAME" TO "$$DB_USER";
-          GRANT ALL PRIVILEGES ON SCHEMA public TO "$$DB_USER";
-        END
-        \$\$;
-        EOF
-
-          echo "Database initialization completed!"
-        } || {
-          echo "Database initialization failed, waiting 5 minutes before exiting"
-          sleep 300
-          exit 1
-        }
-
   n8n:
     <<: *shared
     ports:
-      - "${N8N_PORT:-5678}:5678"
+      - '${N8N_PORT:-5678}:5678'
 
   n8n-worker:
     <<: *shared
