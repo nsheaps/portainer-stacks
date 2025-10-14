@@ -6,7 +6,7 @@ name: 'n8n'
 
 x-shared: &shared
   restart: always
-  image: docker.n8n.io/n8nio/n8n:1.115.2
+  image: docker.n8n.io/n8nio/n8n:1.116.0
   environment:
     # ref: https://docs.n8n.io/hosting/configuration/environment-variables/
     - DB_TYPE=postgresdb
