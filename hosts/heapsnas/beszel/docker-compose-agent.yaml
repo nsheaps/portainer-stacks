@@ -52,7 +52,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - beszel_agent_data:/var/lib/beszel-agent
       # monitor other disks / partitions by mounting a folder in /extra-filesystems
-      # - /mnt/disk/.beszel:/extra-filesystems/sda1:ro
+      - /volume1:/extra-filesystems/sda1:ro
     environment:
       # We want this to go through cloudflare so it's the same as all the others, rather
       # than sending it straight to the beszel socket
