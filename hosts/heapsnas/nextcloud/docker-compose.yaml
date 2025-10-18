@@ -3,21 +3,21 @@ name: "nextcloud"
 
 # Set in env on portainer:
 # - OP_SERVICE_ACCOUNT_TOKEN for secrets fetching
+x-shared: &shared
+  image: nextcloud:apache
+  restart: unless-stopped
+  environment: # more info: https://hub.docker.com/_/nextcloud/#auto-configuration-via-environment-variables
+    - POSTGRES_HOST=postgresql
+    - POSTGRES_DB_FILE=/run/secrets/postgres_db
+    - POSTGRES_USER_FILE=/run/secrets/postgres_user
+    - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+    - REDIS_HOST=redis
+  volumes:
+    - nextcloud-secrets:/run/secrets:ro
+    - /share/Docker/nextcloud:/var/www/html:z
 
 services:
 
-  x-shared: &shared
-    image: nextcloud:apache
-    restart: unless-stopped
-    environment: # more info: https://hub.docker.com/_/nextcloud/#auto-configuration-via-environment-variables
-      - POSTGRES_HOST=postgresql
-      - POSTGRES_DB_FILE=/run/secrets/postgres_db
-      - POSTGRES_USER_FILE=/run/secrets/postgres_user
-      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
-      - REDIS_HOST=redis
-    volumes:
-      - nextcloud-secrets:/run/secrets:ro
-      - /share/Docker/nextcloud:/var/www/html:z
 
   init-secrets:
     image: 1password/op:2
@@ -116,7 +116,7 @@ services:
       - postgresql
       - redis
     ports:
-      - 8080:80
+      - 15432:80
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80"]
       interval: 30s
