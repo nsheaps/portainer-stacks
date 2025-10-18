@@ -96,8 +96,8 @@ services:
           DB_NAME=$(cat /run/secrets/postgres_db)
           DB_USER=$(cat /run/secrets/postgres_user)
           DB_PASSWORD=$(cat /run/secrets/postgres_password)
-          POSTGRES_USER=$(cat /run/secrets/postgres_root_user)
-          export POSTGRES_PASSWORD=$(cat /run/secrets/postgres_root_password)
+          export PGUSER=$(cat /run/secrets/postgres_root_user)
+          export PGPASSWORD=$(cat /run/secrets/postgres_root_password)
 
           # Create database and user if they don't exist, then grant permissions
           psql -h postgresql -d postgres << EOF
