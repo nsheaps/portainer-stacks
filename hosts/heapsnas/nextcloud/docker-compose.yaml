@@ -78,29 +78,25 @@ services:
           export PGUSER=$(cat /run/secrets/postgres_root_user)
           export PGPASSWORD=$(cat /run/secrets/postgres_root_password)
 
-          # Create database and user if they don't exist, then grant permissions
-          psql -h postgresql -d postgres << EOF
-        -- Create database if not exists
-        IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '$$DB_NAME') THEN
-          CREATE DATABASE "$$DB_NAME";
-          RAISE NOTICE 'Created database: $$DB_NAME';
-        ELSE
-          RAISE NOTICE 'Database $$DB_NAME already exists';
-        END IF;
+          DB_EXISTS=$(psql -h postgresql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='${DB_NAME}'")
+          USER_EXISTS=$(psql -h postgresql -d postgres -tAc "SELECT 1 FROM pg_user WHERE usename='${DB_USER}'")
 
-        -- Create user if not exists
-        IF NOT EXISTS (SELECT FROM pg_user WHERE usename = '$$DB_USER') THEN
-          EXECUTE format('CREATE USER "$$DB_USER" WITH PASSWORD ''%s''', '$$DB_PASSWORD');
-          RAISE NOTICE 'Created user: $$DB_USER';
-        ELSE
-          RAISE NOTICE 'User $$DB_USER already exists';
-        END IF;
+          if [ "$$DB_EXISTS" != "1" ]; then
+            echo "Creating database '$$DB_NAME'..."
+            psql -h postgresql -d postgres -c "CREATE DATABASE \"$$DB_NAME\";"
+          else
+            echo "Database '$$DB_NAME' already exists, skipping creation."
+          fi
 
-        -- Grant permissions
-        GRANT ALL PRIVILEGES ON DATABASE "$$DB_NAME" TO "$$DB_USER";
-        GRANT ALL PRIVILEGES ON SCHEMA public TO "$$DB_USER";
-
-        EOF
+          if [ "$$USER_EXISTS" != "1" ]; then
+            echo "Creating user '$$DB_USER'..."
+            psql -h postgresql -d postgres -c "CREATE USER \"$$DB_USER\" WITH PASSWORD '$$DB_PASSWORD';"
+          else
+            echo "User '$$DB_USER' already exists, skipping creation."
+          fi
+          # Grant permissions
+          psql -h postgresql -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE \"$$DB_NAME\" TO \"$$DB_USER\";"
+          psql -h postgresql -d postgres -c "GRANT ALL PRIVILEGES ON SCHEMA public TO \"$$DB_USER\";"
 
           echo "Database initialization completed!"
         } || {
