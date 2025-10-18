@@ -60,6 +60,9 @@ services:
     user: "0:0"
     volumes:
       - nextcloud-secrets:/run/secrets:ro
+    depends_on:
+      init-secrets:
+        condition: service_completed_successfully
     networks:
       - postgresql
     command:

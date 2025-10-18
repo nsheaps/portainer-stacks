@@ -83,6 +83,9 @@ services:
       - n8n-secrets:/run/secrets:ro
     networks:
       - postgresql
+    depends_on:
+      init-secrets:
+        condition: service_completed_successfully
     command:
       - /bin/bash
       - -c
