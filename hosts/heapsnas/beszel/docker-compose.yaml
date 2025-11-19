@@ -17,8 +17,8 @@ services:
     ports:
       - 8090:8090
     volumes:
-      - ./beszel_data:/beszel_data
-      - ./beszel_socket:/beszel_socket
+      - beszel_data:/beszel_data
+      - beszel_socket:/beszel_socket
 
 # https://docs.docker.com/engine/storage/drivers/
 volumes:
