@@ -1,0 +1,113 @@
+name: Auto-fix CI failures
+
+on:
+  workflow_run:
+    workflows: ["check"]
+    types:
+      - completed
+    branches:
+      - main
+
+env:
+  # Set to 'merge' to auto-merge fixes to main, or 'pr' to open a pull request
+  FIX_MODE: pr
+
+jobs:
+  auto-fix:
+    runs-on: ubuntu-latest
+    # Only run if the check workflow failed
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          # Use a PAT if available for better permissions, otherwise use default token
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup corepack/yarn
+        run: corepack enable && corepack install
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Run auto-fix
+        id: autofix
+        run: |
+          echo "Running auto-fix..."
+          yarn run check:fix
+
+      - name: Check for changes
+        id: check-changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected after running fixes"
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes made by auto-fix"
+          fi
+
+      - name: Create Pull Request
+        if: steps.check-changes.outputs.has_changes == 'true' && env.FIX_MODE == 'pr'
+        id: create-pr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "fix(ci): auto-fix CI check failures"
+          title: "Auto-fix CI failures from ${{ github.event.workflow_run.created_at }}"
+          body: |
+            This PR was automatically created to fix CI check failures detected in workflow run [${{ github.event.workflow_run.id }}](${{ github.event.workflow_run.html_url }}).
+
+            ## Changes
+            The following auto-fix commands were run:
+            - `yarn run check:fix` (prettier formatting and other fixable issues)
+
+            ## Verification
+            Please review the changes and ensure they are correct. The CI checks will run automatically on this PR.
+
+            **Original failed run:** ${{ github.event.workflow_run.html_url }}
+          branch: auto-fix/ci-${{ github.event.workflow_run.id }}
+          delete-branch: true
+          labels: |
+            automated
+            ci-fix
+
+      - name: Merge to main
+        if: steps.check-changes.outputs.has_changes == 'true' && env.FIX_MODE == 'merge'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(ci): auto-fix CI check failures"
+          git push origin main
+
+      - name: Verify fixes
+        if: steps.check-changes.outputs.has_changes == 'true'
+        run: |
+          echo "Verifying that fixes resolved the issues..."
+          if yarn run check:ci; then
+            echo "✅ All checks passed after auto-fix!"
+            exit 0
+          else
+            echo "❌ Checks still failing after auto-fix. Manual intervention required."
+            exit 1
+          fi
+
+      - name: No changes needed
+        if: steps.check-changes.outputs.has_changes == 'false'
+        run: |
+          echo "⚠️ Auto-fix did not make any changes, but the check workflow failed."
+          echo "This suggests the failure may not be auto-fixable."
+          echo "Manual intervention is required."
+          exit 1
