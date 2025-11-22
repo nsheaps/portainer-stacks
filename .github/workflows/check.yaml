@@ -36,13 +36,13 @@ jobs:
         continue-on-error: true
 
       - name: Auto-fix issues
-        if: failure()
+        if: steps.check.outcome == 'failure'
         run: |
           echo "Checks failed, attempting to auto-fix..."
           yarn run check:fix
 
       - name: Commit and push auto-fixes
-        if: failure()
+        if: steps.check.outcome == 'failure'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'Auto-fix: Apply automated formatting and linting fixes'
@@ -51,11 +51,11 @@ jobs:
           commit_author: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
 
       - name: Re-run checks after auto-fix
-        if: failure()
+        if: steps.check.outcome == 'failure'
         run: yarn run check:ci
 
       - name: Fail if initial checks failed
-        if: failure()
+        if: steps.check.outcome == 'failure'
         run: |
           echo "Initial checks failed. Even though auto-fixes were applied, the workflow should fail to indicate issues were found."
           exit 1
