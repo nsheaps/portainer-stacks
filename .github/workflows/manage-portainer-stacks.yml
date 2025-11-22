@@ -1,0 +1,183 @@
+name: Manage Portainer Stacks
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'hosts/heapsnas/nextcloud/**'
+      - 'hosts/heapsnas/**/docker-compose.yaml'
+      - '.github/workflows/manage-portainer-stacks.yml'
+  workflow_dispatch:
+  schedule:
+    # Run every 30 minutes
+    - cron: '*/30 * * * *'
+
+env:
+  PORTAINER_URL: ${{ secrets.PORTAINER_URL }}
+  PORTAINER_API_TOKEN: ${{ secrets.PORTAINER_API_TOKEN }}
+  STACK_WEBHOOK_URL: ${{ secrets.STACK_WEBHOOK_URL }}
+
+jobs:
+  manage-stacks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests pyyaml
+
+    - name: Find changed stack files
+      id: find-stacks
+      run: |
+        # Find all docker-compose.yaml files in hosts directory
+        stacks=$(find hosts -name "docker-compose.yaml" -type f | head -10)
+
+        if [ -z "$stacks" ]; then
+          echo "No stack files found"
+          echo "::set-output name=stack_files::"
+          exit 0
+        fi
+
+        # Convert to JSON array for GitHub Actions
+        stack_json=$(echo "$stacks" | jq -R . | jq -s .)
+        echo "::set-output name=stack_files::$stack_json"
+
+    - name: Check existing stacks in Portainer
+      id: check-stacks
+      if: steps.find-stacks.outputs.stack_files != ''
+      run: |
+        python3 << 'EOF'
+        import requests
+        import json
+
+        # Get all stacks from Portainer
+        stacks_url = f"{env['PORTAINER_URL']}/api/stacks"
+        headers = {
+            "Authorization": f"Bearer {env['PORTAINER_API_TOKEN']}",
+            "Content-Type": "application/json"
+        }
+
+        try:
+            response = requests.get(stacks_url, headers=headers)
+            response.raise_for_status()
+            existing_stacks = response.json()
+
+            # Create mapping of stack names to stack IDs
+            stack_map = {}
+            for stack in existing_stacks:
+                if stack.get('Name'):
+                    stack_map[stack['Name']] = stack['Id']
+
+            # Save to GitHub Actions output
+            print(f"::set-output name=stack_map::{json.dumps(stack_map)}")
+            print(f"Found {len(existing_stacks)} existing stacks in Portainer")
+
+        except Exception as e:
+            print(f"Error checking existing stacks: {e}")
+            print("::set-output name=stack_map::{}")
+        EOF
+
+    - name: Create or update stacks
+      if: steps.find-stacks.outputs.stack_files != ''
+      run: |
+        python3 << 'EOF'
+        import requests
+        import json
+        import os
+        from pathlib import Path
+
+        # Get existing stacks mapping
+        existing_stacks = json.loads(steps.check-stacks.outputs.stack_map)
+
+        # Process each stack file
+        stack_files = json.loads(steps.find-stacks.outputs.stack_files)
+
+        for stack_file_path in stack_files:
+            if not stack_file_path:
+                continue
+
+            # Extract stack name from path (e.g., hosts/heapsnas/nextcloud/docker-compose.yaml -> nextcloud)
+            relative_path = stack_file_path.replace('hosts/', '')
+            stack_name = Path(relative_path).parent.name
+
+            print(f"Processing stack: {stack_name}")
+
+            # Read docker-compose.yaml
+            with open(stack_file_path, 'r') as f:
+                compose_content = f.read()
+
+            # Check if stack exists
+            if stack_name in existing_stacks:
+                stack_id = existing_stacks[stack_name]
+                print(f"Stack {stack_name} exists (ID: {stack_id}) - triggering redeploy")
+
+                # Trigger git redeploy
+                redeploy_url = f"{env['PORTAINER_URL']}/api/stacks/{stack_id}/git/redeploy"
+
+                payload = {
+                    "RepositoryURL": os.getenv('GITHUB_SERVER_URL', 'https://github.com') + '/' + os.getenv('GITHUB_REPOSITORY', '${{ github.repository }}'),
+                    "RepositoryReference": os.getenv('GITHUB_REF_NAME', '${{ github.ref_name }}'),
+                    "ComposeFilePath": stack_file_path,
+                    "Folder": str(Path(stack_file_path).parent),
+                    "Env": []  # Optional: add environment variables if needed
+                }
+
+                try:
+                    response = requests.put(
+                        redeploy_url,
+                        headers={
+                            "Authorization": f"Bearer {env['PORTAINER_API_TOKEN']}",
+                            "Content-Type": "application/json"
+                        },
+                        json=payload
+                    )
+
+                    if response.status_code == 200:
+                        print(f"✅ Successfully triggered redeploy for {stack_name}")
+
+                        # Trigger webhook if configured
+                        if env.get('STACK_WEBHOOK_URL'):
+                            webhook_data = {
+                                "stack_name": stack_name,
+                                "stack_id": stack_id,
+                                "action": "redeploy",
+                                "status": "success"
+                            }
+
+                            try:
+                                requests.post(
+                                    env['STACK_WEBHOOK_URL'],
+                                    json=webhook_data,
+                                    timeout=10
+                                )
+                                print(f"✅ Webhook triggered for {stack_name}")
+                            except Exception as webhook_error:
+                                print(f"⚠️  Webhook failed for {stack_name}: {webhook_error}")
+                    else:
+                        print(f"❌ Failed to redeploy {stack_name}: {response.status_code} - {response.text}")
+
+                except Exception as e:
+                    print(f"❌ Error triggering redeploy for {stack_name}: {e}")
+
+            else:
+                print(f"Stack {stack_name} does not exist - skipping (creation not implemented)")
+
+        print("Stack management completed")
+        EOF
+
+    - name: Summary
+      if: always()
+      run: |
+        echo "## Portainer Stack Management Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Stack files processed**: ${{ steps.find-stacks.outputs.stack_files }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Existing stacks found**: ${{ steps.check-stacks.outputs.stack_map }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Action**: Triggered redeploy for changed stacks" >> $GITHUB_STEP_SUMMARY
