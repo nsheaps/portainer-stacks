@@ -20,51 +20,42 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup corepack/yarn
-        run: corepack enable && corepack install
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
+          cache: yarn
+          corepack: true
 
       - name: Install dependencies
         run: yarn install --immutable
 
       - name: Run checks
         id: check
-        run: |
-          if yarn run check:ci; then
-            echo "checks_passed=true" >> $GITHUB_OUTPUT
-          else
-            echo "checks_passed=false" >> $GITHUB_OUTPUT
-          fi
+        run: yarn run check:ci
         continue-on-error: true
 
       - name: Auto-fix issues
-        if: steps.check.outputs.checks_passed == 'false'
+        if: failure()
         run: |
           echo "Checks failed, attempting to auto-fix..."
           yarn run check:fix
 
-      - name: Check if files were modified
-        if: steps.check.outputs.checks_passed == 'false'
-        id: git-check
-        run: |
-          if git diff --quiet; then
-            echo "files_changed=false" >> $GITHUB_OUTPUT
-          else
-            echo "files_changed=true" >> $GITHUB_OUTPUT
-          fi
-
       - name: Commit and push auto-fixes
-        if: steps.check.outputs.checks_passed == 'false' && steps.git-check.outputs.files_changed == 'true'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add .
-          git commit -m "Auto-fix: Apply automated formatting and linting fixes"
-          git push
+        if: failure()
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-fix: Apply automated formatting and linting fixes"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+          commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
 
       - name: Re-run checks after auto-fix
-        if: steps.check.outputs.checks_passed == 'false' && steps.git-check.outputs.files_changed == 'true'
+        if: failure()
         run: yarn run check:ci
+
+      - name: Fail if initial checks failed
+        if: failure()
+        run: |
+          echo "Initial checks failed. Even though auto-fixes were applied, the workflow should fail to indicate issues were found."
+          exit 1
