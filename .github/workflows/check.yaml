@@ -18,11 +18,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
       
+      - name: Setup corepack/yarn
+        run: corepack enable && corepack install
+      
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
+          # do not use built in corepack or cache flags
           node-version-file: .nvmrc
-          corepack: true
       
       - name: Install dependencies
         run: yarn install --immutable
