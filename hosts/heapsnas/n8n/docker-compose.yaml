@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
-name: "n8n"
+name: 'n8n'
 
 # Set in env on portainer:
 # - OP_SERVICE_ACCOUNT_TOKEN for secrets fetching
@@ -41,7 +41,7 @@ x-shared: &shared
 services:
   init-secrets:
     image: 1password/op:2
-    user: "0:0" # Run as root for putting in the secrets dir
+    user: '0:0' # Run as root for putting in the secrets dir
     environment:
       # OP_SERVICE_ACCOUNT_TOKEN should be set in Portainer as stack environment variable
       - OP_SERVICE_ACCOUNT_TOKEN=${OP_SERVICE_ACCOUNT_TOKEN}
@@ -78,7 +78,7 @@ services:
 
   init-database:
     image: postgres:18
-    user: "0:0"
+    user: '0:0'
     volumes:
       - n8n-secrets:/run/secrets:ro
     networks:
@@ -131,7 +131,7 @@ services:
   n8n:
     <<: *shared
     ports:
-      - "${N8N_PORT:-5678}:5678"
+      - '${N8N_PORT:-5678}:5678'
 
   n8n-worker:
     <<: *shared
