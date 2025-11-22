@@ -12,9 +12,13 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup corepack/yarn
         run: corepack enable && corepack install
@@ -27,4 +31,40 @@ jobs:
         run: yarn install --immutable
 
       - name: Run checks
+        id: check
+        run: |
+          if yarn run check:ci; then
+            echo "checks_passed=true" >> $GITHUB_OUTPUT
+          else
+            echo "checks_passed=false" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+      - name: Auto-fix issues
+        if: steps.check.outputs.checks_passed == 'false'
+        run: |
+          echo "Checks failed, attempting to auto-fix..."
+          yarn run check:fix
+
+      - name: Check if files were modified
+        if: steps.check.outputs.checks_passed == 'false'
+        id: git-check
+        run: |
+          if git diff --quiet; then
+            echo "files_changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "files_changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push auto-fixes
+        if: steps.check.outputs.checks_passed == 'false' && steps.git-check.outputs.files_changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Auto-fix: Apply automated formatting and linting fixes"
+          git push
+
+      - name: Re-run checks after auto-fix
+        if: steps.check.outputs.checks_passed == 'false' && steps.git-check.outputs.files_changed == 'true'
         run: yarn run check:ci
