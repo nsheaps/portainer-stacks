@@ -17,28 +17,28 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-      - name: Setup corepack/yarn
-        run: corepack enable && corepack install
+      
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
+          corepack: true
+      
       - name: Install dependencies
         run: yarn install --immutable
 
       - name: Run checks
         id: check
         run: yarn run check:ci
-        continue-on-error: true
 
       - name: Auto-fix issues
-        if: steps.check.outcome == 'failure'
+        if: failure()
         run: |
           echo "Checks failed, attempting to auto-fix..."
           yarn run check:fix
 
       - name: Commit and push auto-fixes
-        if: steps.check.outcome == 'failure'
+        if: failure()
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'Auto-fix: Apply automated formatting and linting fixes'
@@ -47,11 +47,11 @@ jobs:
           commit_author: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
 
       - name: Re-run checks after auto-fix
-        if: steps.check.outcome == 'failure'
+        if: failure()
         run: yarn run check:ci
 
       - name: Fail if initial checks failed
-        if: steps.check.outcome == 'failure'
+        if: failure()
         run: |
           echo "Initial checks failed. Even though auto-fixes were applied, the workflow should fail to indicate issues were found."
           exit 1
