@@ -12,19 +12,54 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    # permissions:
+    #   handled by PAT
+    #   contents: write
+    #   actions: write
     steps:
+      - name: Fetch Secrets
+        id: load_secrets
+        uses: 1password/load-secrets-action@v3
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_TOKEN }}
+          GITHUB_PAT_N8AGENT: op://heapsinfra/gha--github--n8agent-pat/credential
+
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          token: ${{ steps.load_secrets.outputs.GITHUB_PAT_N8AGENT }}
 
       - name: Setup corepack/yarn
         run: corepack enable && corepack install
+
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
+          # do not use built in corepack or cache flags
           node-version-file: .nvmrc
 
       - name: Install dependencies
         run: yarn install --immutable
 
       - name: Run checks
+        id: check
         run: yarn run check:ci
+
+      - name: Auto-fix issues
+        if: failure()
+        run: |
+          echo "Checks failed, attempting to auto-fix..."
+          yarn run check:fix
+
+      - name: Commit and push auto-fixes
+        if: failure()
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'Auto-fix: Apply automated formatting and linting fixes'
+          commit_user_name: 'n8agent[bot]'
+          commit_user_email: 'n8agent@users.noreply.github.com'
+
+      - name: Re-run checks after auto-fix
+        if: failure()
+        run: |
+          yarn run check:ci || echo "check:ci still failed after autofixing"
