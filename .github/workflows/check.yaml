@@ -58,7 +58,6 @@ jobs:
           commit_message: 'Auto-fix: Apply automated formatting and linting fixes'
           commit_user_name: 'n8agent[bot]'
           commit_user_email: 'n8agent[bot]@users.noreply.github.com'
-        
 
       - name: Re-run checks after auto-fix
         if: failure()
