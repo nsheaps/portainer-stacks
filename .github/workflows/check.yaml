@@ -13,9 +13,9 @@ jobs:
   check:
     runs-on: ubuntu-latest
     # permissions:
-      # handled by PAT
-      # contents: write
-      # actions: write
+    # handled by PAT
+    # contents: write
+    # actions: write
     steps:
       - name: Fetch Secrets
         id: load_secrets
@@ -23,21 +23,21 @@ jobs:
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_TOKEN }}
           GITHUB_PAT_N8AGENT: op://heapsinfra/gha--github--n8agent-pat/credential
-          
+
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
           token: ${{ steps.load_secrets.outputs.GITHUB_PAT_N8AGENT }}
-      
+
       - name: Setup corepack/yarn
         run: corepack enable && corepack install
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           # do not use built in corepack or cache flags
           node-version-file: .nvmrc
-      
+
       - name: Install dependencies
         run: yarn install --immutable
 
@@ -63,5 +63,4 @@ jobs:
       - name: Re-run checks after auto-fix
         if: failure()
         run: |
-          yarn run check:ci || echo "check:ci still failed after autofixing" 
-
+          yarn run check:ci || echo "check:ci still failed after autofixing"
