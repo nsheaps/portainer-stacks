@@ -17,6 +17,13 @@ jobs:
       # contents: write
       # actions: write
     steps:
+      - name: Fetch Secrets
+        id: load_secrets
+        uses: 1password/load-secrets-action@v3
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          GITHUB_PAT_N8AGENT: op://heapsinfra/gha--github--n8agent-pat/credential
+          
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
