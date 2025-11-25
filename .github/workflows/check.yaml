@@ -25,7 +25,7 @@ jobs:
           GITHUB_PAT_N8AGENT: op://heapsinfra/gha--github--n8agent-pat/credential
 
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           token: ${{ steps.load_secrets.outputs.GITHUB_PAT_N8AGENT }}
 
