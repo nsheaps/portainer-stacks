@@ -27,7 +27,7 @@ x-shared: &shared
     - # allow crypto to be used in code node with nodejs
       # for use in verifying signatures against public keys
       # see: https://community.n8n.io/t/unable-to-verify-gohighlevel-webhook-signature-with-public-key-using-n8n/94396
-      NODE_FUNCTION_ALLOW_BUILTIN=crypto
+      NODE_FUNCTION_ALLOW_BUILTIN=crypto,buffer
   networks:
     # we use external networks so we can share with other stacks
     - cloudflared
