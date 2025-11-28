@@ -11,6 +11,7 @@
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: [
     "config:recommended",
+    "default:automergeDigest",
     ":semanticCommits",
     // Use recommended monorepo groupings
     // This preset groups dependencies from the same monorepo together
