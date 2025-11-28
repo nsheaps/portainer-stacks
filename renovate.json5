@@ -47,8 +47,6 @@
   dependencyDashboardOSVVulnerabilitySummary: "all",
 
   packageRules: [
-    // CRITICAL: Use matchDatasources instead of matchManagers for Docker digest pinning
-    // This is the official recommended approach from Renovate docs
     {
       matchDatasources: ["docker"],
       description: "Pin all Docker image digests (dockerfile + docker-compose + all other managers)",
