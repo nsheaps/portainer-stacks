@@ -4,6 +4,7 @@
 // double escaped backslashes in regex strings to preserve the escaping
 // If using vscode, install JSON5 extension to get syntax highlighting
 // https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-json5
+
 // To test changes, run:
 // export LOG_LEVEL=debug && nvm install 20 && nvm exec 22 npx --yes --package renovate -- renovate --dry-run --token $(gh auth token) --platform=local | tee renovate-log.txt
 // renovate config reference: https://docs.renovatebot.com/configuration-options/
