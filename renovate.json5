@@ -4,6 +4,7 @@
 // double escaped backslashes in regex strings to preserve the escaping
 // If using vscode, install JSON5 extension to get syntax highlighting
 // https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-json5
+
 // To test changes, run:
 // export LOG_LEVEL=debug && nvm install 20 && nvm exec 22 npx --yes --package renovate -- renovate --dry-run --token $(gh auth token) --platform=local | tee renovate-log.txt
 // renovate config reference: https://docs.renovatebot.com/configuration-options/
@@ -47,31 +48,23 @@
   dependencyDashboardOSVVulnerabilitySummary: "all",
 
   packageRules: [
-    // Dockerfile pinning rules (original)
     {
-      matchManagers: ["dockerfile"],
+      matchDatasources: ["docker"],
+      description: "Pin all Docker image digests (dockerfile + docker-compose + all other managers)",
       pinDigests: true,
-      rangeStrategy: "pin",
     },
-    // Docker Compose pinning rules - pin full semver + digest
+    // Disable auto-merge for major version updates
     {
-      matchManagers: ["docker-compose"],
-      description: "Pin docker-compose images to full semver versions with digests",
-      pinDigests: true,
-      rangeStrategy: "pin",
-    },
-    // Disable auto-merge for major version updates (docker-compose and dockerfile)
-    {
-      matchManagers: ["docker-compose", "dockerfile"],
+      matchDatasources: ["docker"],
       matchUpdateTypes: ["major"],
       description: "Disable auto-merge for major version updates - manual review required",
       automerge: false,
     },
-    // Enable auto-merge for digest pins and semver pins (minor/patch)
+    // Enable auto-merge for digest pins and safe updates (minor/patch)
     {
-      matchManagers: ["docker-compose", "dockerfile"],
+      matchDatasources: ["docker"],
       matchUpdateTypes: ["digest", "pin", "minor", "patch"],
-      description: "Auto-merge digest updates and semver pins (minor/patch)",
+      description: "Auto-merge digest updates, digest pins, and semver pins (minor/patch)",
       automerge: true,
     },
   ],
